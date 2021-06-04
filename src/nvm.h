@@ -22,6 +22,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "../../nvm_cfg.h"
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Definitions
@@ -37,26 +39,7 @@ typedef enum
 
 } nvm_status_t;
 
-/**
- * 	Memory device driver
- */
-typedef struct
-{
-	nvm_status_t (*pf_nvm_init)		(void);
-	nvm_status_t (*pf_nvm_write)	(const uint32_t addr, const uint32_t size, const uint8_t * const p_data);
-	nvm_status_t (*pf_nvm_read)		(const uint32_t addr, const uint32_t size, uint8_t * const p_data);
-	nvm_status_t (*pf_nvm_erase)	(const uint32_t addr, const uint32_t size);
-} nvm_mem_driver_t;
 
-/**
- * 	Memory region
- */
-typedef struct nvm_region_s
-{
-	const uint32_t 	start_addr;		/**<Start address of region */
-	const uint32_t 	end_addr;		/**<End address of region */
-	const char		name;			/**<Name of region */
-} nvm_region_t;
 
 
 ////////////////////////////////////////////////////////////////////////////////

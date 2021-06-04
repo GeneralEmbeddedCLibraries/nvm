@@ -22,7 +22,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include "nvm/src/nvm.h"
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Definitions
@@ -64,11 +64,22 @@ typedef enum
 } nvm_mem_drv_name_t;
 
 
+/**
+ * 	Forward declaration of memory driver data types
+ */
+struct nvm_mem_drv_s;
+typedef struct nvm_mem_drv_s nvm_mem_drv_t;
+
+/**
+ * 	Forward declaration of memory regions data types
+ */
+struct nvm_region_s;
+typedef struct nvm_region_s nvm_region_t;
+
 ////////////////////////////////////////////////////////////////////////////////
 // Functions Prototypes
 ////////////////////////////////////////////////////////////////////////////////
 const nvm_region_t * 		nvm_cfg_get_config		(void);
-const nvm_mem_driver_t * 	nvm_cfg_get_mem_drivers	(void);
-
+const nvm_mem_drv_t * 		nvm_cfg_get_mem_drivers	(void);
 
 #endif // _NVM_CFG_H_
