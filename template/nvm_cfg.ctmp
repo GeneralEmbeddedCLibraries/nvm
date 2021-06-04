@@ -1,0 +1,107 @@
+////////////////////////////////////////////////////////////////////////////////
+/**
+*@file      nvm_cfg.c
+*@brief     Non-Volatile memory configuration
+*@author    Ziga Miklosic
+*@date      04.06.2021
+*@version	V1.0.0
+*/
+////////////////////////////////////////////////////////////////////////////////
+/**
+*@addtogroup NVM
+* @{ <!-- BEGIN GROUP -->
+*
+* 	Non-volatile memory configuration, dividing into regions.
+*/
+////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
+// Includes
+////////////////////////////////////////////////////////////////////////////////
+#include "nvm_cfg.h"
+
+// USER INCLUDE BEGIN...
+
+#include "drivers/devices/25lcxxxx/25lcxxxx/src/25lcxxxx.h"
+
+// USER INCLUDE END...
+
+////////////////////////////////////////////////////////////////////////////////
+// Definitions
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * 	Memory device driver
+ */
+typedef struct
+{
+	nvm_status_t (*pf_nvm_init)		(void);
+	nvm_status_t (*pf_nvm_write)	(const uint32_t addr, const uint32_t size, const uint8_t * const p_data);
+	nvm_status_t (*pf_nvm_read)		(const uint32_t addr, const uint32_t size, uint8_t * const p_data);
+	nvm_status_t (*pf_nvm_erase)	(const uint32_t addr, const uint32_t size);
+} nvm_mem_driver_t;
+
+
+/**
+ * 	Memory region
+ */
+typedef struct
+{
+	uint32_t start_addr;	/**<Start address of region */
+	uint32_t end_addr;		/**<End address of region */
+} nvm_region_t;
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Variables
+////////////////////////////////////////////////////////////////////////////////
+
+
+/**
+ * 	NVM low-level memory driver
+ */
+static nvm_mem_driver_t g_mem_driver [ eNVM_MEM_DRV_NUM_OF ]=
+{
+	// USER CODE BEGIN...
+
+	// EEPROM LOW LEVEL MEMORY DRIVERS
+	{
+		(nvm_status_t (*)(void))																	_25lcxxxx_init,
+		(nvm_status_t (*)(const uint32_t addr, const uint32_t size, const uint8_t * const p_data)) 	_25lcxxxx_write,
+		(nvm_status_t (*)(const uint32_t addr, const uint32_t size, uint8_t * const p_data))		_25lcxxxx_read,
+		NULL
+	},
+
+
+
+	{	NULL,				NULL,				NULL,				NULL 	},		// FLASH
+
+	// USER CODE END...
+};
+
+
+
+/**
+ * 	NVM region definitions
+ */
+static const nvm_region_t g_nvm_region[ eNVM_REGION_NUM_OF ] =
+{
+	// USER CODE BEGIN...
+
+	// 	Start address			End address
+	{	.start_addr = 0x00,		.end_addr = 0x100 	},		// CAL_PAR
+	{	.start_addr = 0x100,	.end_addr = 0x1000 	},		// RUN_PAR
+
+	// USER CODE END...
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Functions
+////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
+/**
+* @} <!-- END GROUP -->
+*/
+////////////////////////////////////////////////////////////////////////////////
