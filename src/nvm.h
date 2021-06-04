@@ -37,13 +37,35 @@ typedef enum
 
 } nvm_status_t;
 
+/**
+ * 	Memory device driver
+ */
+typedef struct
+{
+	nvm_status_t (*pf_nvm_init)		(void);
+	nvm_status_t (*pf_nvm_write)	(const uint32_t addr, const uint32_t size, const uint8_t * const p_data);
+	nvm_status_t (*pf_nvm_read)		(const uint32_t addr, const uint32_t size, uint8_t * const p_data);
+	nvm_status_t (*pf_nvm_erase)	(const uint32_t addr, const uint32_t size);
+} nvm_mem_driver_t;
+
+/**
+ * 	Memory region
+ */
+typedef struct nvm_region_s
+{
+	const uint32_t 	start_addr;		/**<Start address of region */
+	const uint32_t 	end_addr;		/**<End address of region */
+	const char		name;			/**<Name of region */
+} nvm_region_t;
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Functions Prototypes
 ////////////////////////////////////////////////////////////////////////////////
 nvm_status_t 	nvm_init	(void);
 bool			nvm_is_init	(void);
-nvm_status_t 	nvm_write	(const uint8_t region, const uint8_t driver, const uint32_t addr, const uint32_t size, const uint8_t * const p_data);
-
+nvm_status_t 	nvm_write	(const uint8_t driver, const uint8_t region, const uint32_t addr, const uint32_t size, const uint8_t * const p_data);
+nvm_status_t 	nvm_read	(const uint8_t driver, const uint8_t region, const uint32_t addr, const uint32_t size, uint8_t * const p_data);
+nvm_status_t 	nvm_erase	(const uint8_t driver, const uint8_t region, const uint32_t addr, const uint32_t size);
 
 #endif // _NVM_H_

@@ -30,26 +30,10 @@
 // Definitions
 ////////////////////////////////////////////////////////////////////////////////
 
-/**
- * 	Memory device driver
- */
-typedef struct
-{
-	nvm_status_t (*pf_nvm_init)		(void);
-	nvm_status_t (*pf_nvm_write)	(const uint32_t addr, const uint32_t size, const uint8_t * const p_data);
-	nvm_status_t (*pf_nvm_read)		(const uint32_t addr, const uint32_t size, uint8_t * const p_data);
-	nvm_status_t (*pf_nvm_erase)	(const uint32_t addr, const uint32_t size);
-} nvm_mem_driver_t;
 
 
-/**
- * 	Memory region
- */
-typedef struct
-{
-	uint32_t start_addr;	/**<Start address of region */
-	uint32_t end_addr;		/**<End address of region */
-} nvm_region_t;
+
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -60,7 +44,7 @@ typedef struct
 /**
  * 	NVM low-level memory driver
  */
-static nvm_mem_driver_t g_mem_driver [ eNVM_MEM_DRV_NUM_OF ]=
+static nvm_mem_driver_t g_mem_driver[ eNVM_MEM_DRV_NUM_OF ]=
 {
 	// USER CODE BEGIN...
 
@@ -99,6 +83,16 @@ static const nvm_region_t g_nvm_region[ eNVM_REGION_NUM_OF ] =
 ////////////////////////////////////////////////////////////////////////////////
 // Functions
 ////////////////////////////////////////////////////////////////////////////////
+
+const nvm_region_t * nvm_cfg_get_regions(void)
+{
+	return (const nvm_region_t*) &g_nvm_region;
+}
+
+const nvm_mem_driver_t * nvm_cfg_get_mem_drivers(void)
+{
+	return (const nvm_mem_driver_t*) &g_mem_driver;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 /**

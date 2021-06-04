@@ -63,10 +63,12 @@ typedef enum
 	eNVM_MEM_DRV_NUM_OF
 } nvm_mem_drv_name_t;
 
+
 ////////////////////////////////////////////////////////////////////////////////
 // Functions Prototypes
 ////////////////////////////////////////////////////////////////////////////////
-
+const nvm_region_t * 		nvm_cfg_get_config		(void);
+const nvm_mem_driver_t * 	nvm_cfg_get_mem_drivers	(void);
 
 
 #endif // _NVM_CFG_H_
