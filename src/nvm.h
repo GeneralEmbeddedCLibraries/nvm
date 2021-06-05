@@ -30,6 +30,13 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * 	Module version
+ */
+#define NVM_VER_MAJOR		( 1 )
+#define NVM_VER_MINOR		( 0 )
+#define NVM_VER_DEVELOP		( 0 )
+
+/**
  * 	Status
  */
 typedef enum
@@ -38,9 +45,6 @@ typedef enum
 	eNVM_ERROR	= 0x01,		/**<General error */
 
 } nvm_status_t;
-
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // Functions Prototypes
