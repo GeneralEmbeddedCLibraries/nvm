@@ -12,6 +12,9 @@
 * @{ <!-- BEGIN GROUP -->
 *
 * 	Non-volatile memory configuration, dividing into regions.
+*
+* 	Put code that is platform depended inside code block start with
+* 	"USER_CODE_BEGIN" and with end of "USER_CODE_END".
 */
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -21,11 +24,11 @@
 #include "nvm_cfg.h"
 #include "nvm/src/nvm.h"
 
-// USER INCLUDE BEGIN...
+// USER CODE BEGIN...
 
 #include "drivers/devices/25lcxxxx/25lcxxxx/src/25lcxxxx.h"
 
-// USER INCLUDE END...
+// USER CODE END...
 
 ////////////////////////////////////////////////////////////////////////////////
 // Definitions
@@ -47,11 +50,11 @@ typedef struct nvm_mem_driver_s
  */
 typedef struct nvm_region_s
 {
-	const uint32_t 	start_addr;		/**<Start address of region */
-	const uint32_t 	end_addr;		/**<End address of region */
-	const char		name;			/**<Name of region */
+	const char *				name;			/**<Name of region */
+	const uint32_t 				start_addr;		/**<Start address of region */
+	const uint32_t 				size;			/**<Size of region in bytes */
+	const nvm_mem_driver_t *	p_driver;		/**<Low level memory driver */
 } nvm_region_t;
-
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -61,6 +64,15 @@ typedef struct nvm_region_s
 
 /**
  * 	NVM low-level memory driver
+ *
+ * 	@brief	User shall specified low level memory drivers API functions
+ * 			for defined memory driver.
+ *
+ * 			Each driver expect four functions: init, write, read and erase with
+ * 			exact predefined function prototypes.
+ *
+ *
+ * 	TODO: Check for properly connect _25lcxxxx and NVM regarding return values!
  */
 static nvm_mem_driver_t g_mem_driver[ eNVM_MEM_DRV_NUM_OF ]=
 {
@@ -84,15 +96,20 @@ static nvm_mem_driver_t g_mem_driver[ eNVM_MEM_DRV_NUM_OF ]=
 
 
 /**
- * 	NVM region definitions
+ * 		NVM region definitions
+ *
+ *	@brief	User shall specified predefined regions name, start, size
+ *			and pointer to low level driver.
+ *
+ * 	@note	Spectial care with start address and its size!
  */
 static const nvm_region_t g_nvm_region[ eNVM_REGION_NUM_OF ] =
 {
 	// USER CODE BEGIN...
 
-	// 	Start address			End address
-	{	.start_addr = 0x00,		.end_addr = 0x100 	},		// CAL_PAR
-	{	.start_addr = 0x100,	.end_addr = 0x1000 	},		// RUN_PAR
+	// 	Name						Start address			Size [byte]			Low level driver
+	{	.name = "runtime par",		.start_addr = 0x0,		.size = 1024,		.p_driver = &g_mem_driver[ eNVM_MEM_DRV_EEPROM ]	},
+	{	.name = "calibartion par",	.start_addr = 0x0,		.size = 1024,		.p_driver = &g_mem_driver[ eNVM_MEM_DRV_FLASH ]		},
 
 	// USER CODE END...
 };

@@ -47,8 +47,8 @@ typedef enum
 ////////////////////////////////////////////////////////////////////////////////
 nvm_status_t 	nvm_init	(void);
 bool			nvm_is_init	(void);
-nvm_status_t 	nvm_write	(const uint8_t driver, const uint8_t region, const uint32_t addr, const uint32_t size, const uint8_t * const p_data);
-nvm_status_t 	nvm_read	(const uint8_t driver, const uint8_t region, const uint32_t addr, const uint32_t size, uint8_t * const p_data);
-nvm_status_t 	nvm_erase	(const uint8_t driver, const uint8_t region, const uint32_t addr, const uint32_t size);
+nvm_status_t 	nvm_write	(const nvm_region_name_t region, const uint32_t addr, const uint32_t size, const uint8_t * const p_data);
+nvm_status_t 	nvm_read	(const nvm_region_name_t region, const uint32_t addr, const uint32_t size, uint8_t * const p_data);
+nvm_status_t 	nvm_erase	(const nvm_region_name_t region, const uint32_t addr, const uint32_t size);
 
 #endif // _NVM_H_
