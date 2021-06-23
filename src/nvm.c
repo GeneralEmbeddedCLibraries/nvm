@@ -33,6 +33,12 @@
  */
 static bool gb_is_init = false;
 
+/**
+ * 	Pointer to NVM
+ */
+static const nvm_region_t * gp_nvm_regions = NULL;
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // Functions
 ////////////////////////////////////////////////////////////////////////////////
@@ -40,7 +46,24 @@ static bool gb_is_init = false;
 
 nvm_status_t nvm_init(void)
 {
-	nvm_status_t status = eNVM_OK;
+	nvm_status_t 	status 	= eNVM_OK;
+	uint8_t			reg_num	= 0U;
+
+	// Get table configuration
+	gp_nvm_regions = nvm_cfg_get_regions();
+	NVM_ASSERT( NULL != gp_nvm_regions );
+
+	// Low level driver init
+	for ( reg_num = 0; reg_num < eNVM_REGION_NUM_OF; reg_num++ )
+	{
+		gp_nvm_regions[reg_num].p_driver->pf_nvm_init();
+	}
+
+
+
+	// TODO: Remove only testing...
+	gb_is_init = true;
+
 
 
 	return status;
