@@ -56,14 +56,16 @@ nvm_status_t nvm_init(void)
 	// Low level driver init
 	for ( reg_num = 0; reg_num < eNVM_REGION_NUM_OF; reg_num++ )
 	{
-		gp_nvm_regions[reg_num].p_driver->pf_nvm_init();
+		if ( NULL != gp_nvm_regions[reg_num].p_driver->pf_nvm_init )
+		{
+			gp_nvm_regions[reg_num].p_driver->pf_nvm_init();
+		}
 	}
 
 
 
 	// TODO: Remove only testing...
 	gb_is_init = true;
-
 
 
 	return status;
@@ -78,6 +80,14 @@ nvm_status_t nvm_write(const nvm_region_name_t region, const uint32_t addr, cons
 {
 	nvm_status_t status = eNVM_OK;
 
+	// Is init
+	NVM_ASSERT( true == gb_is_init );
+
+	// Check inputs
+	NVM_ASSERT( region < eNVM_REGION_NUM_OF );
+	NVM_ASSERT(( addr >= gp_nvm_regions[region].start_addr ) && (( addr + size ) < ( gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size )));
+
+	gp_nvm_regions[region].p_driver->pf_nvm_write( addr, size, p_data );
 
 	return status;
 }
@@ -87,6 +97,14 @@ nvm_status_t nvm_read(const nvm_region_name_t region, const uint32_t addr, const
 {
 	nvm_status_t status = eNVM_OK;
 
+	// Is init
+	NVM_ASSERT( true == gb_is_init );
+
+	// Check inputs
+	NVM_ASSERT( region < eNVM_REGION_NUM_OF );
+	NVM_ASSERT(( addr >= gp_nvm_regions[region].start_addr ) && (( addr + size ) < ( gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size )));
+
+	gp_nvm_regions[region].p_driver->pf_nvm_read( addr, size, p_data );
 
 	return status;
 }
@@ -95,6 +113,14 @@ nvm_status_t nvm_erase(const nvm_region_name_t region, const uint32_t addr, cons
 {
 	nvm_status_t status = eNVM_OK;
 
+	// Is init
+	NVM_ASSERT( true == gb_is_init );
+
+	// Check inputs
+	NVM_ASSERT( region < eNVM_REGION_NUM_OF );
+	NVM_ASSERT(( addr >= gp_nvm_regions[region].start_addr ) && (( addr + size ) < ( gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size )));
+
+	gp_nvm_regions[region].p_driver->pf_nvm_erase( addr, size );
 
 	return status;
 }
