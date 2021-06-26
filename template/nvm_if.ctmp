@@ -1,0 +1,162 @@
+////////////////////////////////////////////////////////////////////////////////
+/**
+*@file      nvm_if.h
+*@brief     Non-Volatile memory interface file
+*@author    Ziga Miklosic
+*@date      26.06.2021
+*@version	V1.0.0
+*/
+////////////////////////////////////////////////////////////////////////////////
+/**
+*@addtogroup NVM IF
+* @{ <!-- BEGIN GROUP -->
+*
+*
+* 	Put code that is platform depended inside code block start with
+* 	"USER_CODE_BEGIN" and with end of "USER_CODE_END".
+*/
+////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
+// Includes
+////////////////////////////////////////////////////////////////////////////////
+#include "nvm_if.h"
+
+// USER CODE BEGIN...
+
+#include "cmsis_os2.h"
+
+// USER CODE END...
+
+////////////////////////////////////////////////////////////////////////////////
+// Definitions
+////////////////////////////////////////////////////////////////////////////////
+
+// USER DEFINITIONS BEGIN...
+
+/**
+ * 	NVM mutex timeout
+ *
+ * 	Unit: ms
+ */
+#define NVM_CFG_MUTEX_TIMEOUT_MS				( 10 )
+
+// USER DEFINITIONS END...
+
+////////////////////////////////////////////////////////////////////////////////
+// Variables
+////////////////////////////////////////////////////////////////////////////////
+
+// USER VARIABLES BEGIN...
+
+/**
+ * 	NVM OS mutex
+ */
+static osMutexId_t	g_nvm_mutex_id = NULL;
+const osMutexAttr_t g_nvm_mutex_attr =
+{
+    .name 		= "NVM",
+    .attr_bits 	= ( osMutexPrioInherit ),
+};
+
+// USER VARIABLES END...
+
+////////////////////////////////////////////////////////////////////////////////
+// Functions
+////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
+/**
+*		Initialize low level interface
+*
+* @note	User shall provide definition of that function based on used platform!
+*
+* @return 		status - Status of initialization
+*/
+////////////////////////////////////////////////////////////////////////////////
+nvm_status_t nvm_if_init(void)
+{
+	nvm_status_t status = eNVM_OK;
+
+	// USER CODE BEGIN...
+
+	// Create mutex
+	g_nvm_mutex_id = osMutexNew( &g_nvm_mutex_attr );
+
+	if ( NULL == g_nvm_mutex_id )
+	{
+		status = eNVM_ERROR;
+	}
+
+	// USER CODE END...
+
+
+	return status;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/**
+*		Acquire mutex
+*
+* @note	User shall provide definition of that function based on used platform!
+*
+*		If not being used leave empty.
+*
+*		This function does not have an affect if "NVM_CFG_MUTEX_EN"
+* 		is set to 0.
+*
+* @return 		status - Status of operation
+*/
+////////////////////////////////////////////////////////////////////////////////
+nvm_status_t nvm_if_aquire_mutex(void)
+{
+	nvm_status_t status = eNVM_OK;
+
+	// USER CODE BEGIN...
+
+	if ( osOK == osMutexAcquire( g_nvm_mutex_id, NVM_CFG_MUTEX_TIMEOUT_MS ))
+	{
+		// No action
+	}
+	else
+	{
+		status = eNVM_ERROR;
+	}
+
+	// USER CODE END...
+
+	return status;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/**
+*		Release mutex
+*
+* @note	User shall provide definition of that function based on used platform!
+*
+*		If not being used leave empty.
+*
+*		This function does not have an affect if "NVM_CFG_MUTEX_EN"
+* 		is set to 0.
+*
+* @return 		status - Status of operation
+*/
+////////////////////////////////////////////////////////////////////////////////
+nvm_status_t nvm_if_release_mutex(void)
+{
+	nvm_status_t status = eNVM_OK;
+
+	// USER CODE BEGIN...
+
+	osMutexRelease( g_nvm_mutex_id );
+
+	// USER CODE END...
+
+	return status;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/**
+* @} <!-- END GROUP -->
+*/
+////////////////////////////////////////////////////////////////////////////////
