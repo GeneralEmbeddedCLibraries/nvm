@@ -26,7 +26,19 @@
 
 // USER CODE BEGIN...
 
+#include "assert.h"
 #include "drivers/devices/25lcxxxx/25lcxxxx/src/25lcxxxx.h"
+
+
+/**
+ * 	Check 25lcxxxx driver compatibility
+ *
+ * 	Driver version support: V1.0.1 or higher
+ */
+static_assert( 1 ==_25LCXXXX_VER_MAJOR );
+static_assert( 0 ==_25LCXXXX_VER_MINOR );
+static_assert( 1 <=_25LCXXXX_VER_DEVELOP );
+
 
 // USER CODE END...
 
@@ -34,33 +46,9 @@
 // Definitions
 ////////////////////////////////////////////////////////////////////////////////
 
-/**
- * 	Memory device driver
- */
-typedef struct nvm_mem_driver_s
-{
-	nvm_status_t (*pf_nvm_init)		(void);
-	nvm_status_t (*pf_nvm_write)	(const uint32_t addr, const uint32_t size, const uint8_t * const p_data);
-	nvm_status_t (*pf_nvm_read)		(const uint32_t addr, const uint32_t size, uint8_t * const p_data);
-	nvm_status_t (*pf_nvm_erase)	(const uint32_t addr, const uint32_t size);
-} nvm_mem_driver_t;
-
-/**
- * 	Memory region
- */
-typedef struct nvm_region_s
-{
-	const char *				name;			/**<Name of region */
-	const uint32_t 				start_addr;		/**<Start address of region */
-	const uint32_t 				size;			/**<Size of region in bytes */
-	const nvm_mem_driver_t *	p_driver;		/**<Low level memory driver */
-} nvm_region_t;
-
-
 ////////////////////////////////////////////////////////////////////////////////
 // Variables
 ////////////////////////////////////////////////////////////////////////////////
-
 
 /**
  * 	NVM low-level memory driver
@@ -71,10 +59,14 @@ typedef struct nvm_region_s
  * 			Each driver expect four functions: init, write, read and erase with
  * 			exact predefined function prototypes.
  *
+ * 	@note	It is important that low level driver return status has the same
+ * 			interface. Rule is that 0 means OK, non-zero values means error
+ * 			codes. For know NVM module is written that detects only
+ * 			error code by checking for 0 return code as enumeration type.
  *
- * 	TODO: Check for properly connect _25lcxxxx and NVM regarding return values!
+ *
  */
-static nvm_mem_driver_t g_mem_driver[ eNVM_MEM_DRV_NUM_OF ]=
+static const nvm_mem_driver_t g_mem_driver[ eNVM_MEM_DRV_NUM_OF ]=
 {
 	// USER CODE BEGIN...
 
@@ -83,50 +75,54 @@ static nvm_mem_driver_t g_mem_driver[ eNVM_MEM_DRV_NUM_OF ]=
 		(nvm_status_t (*)(void))																	_25lcxxxx_init,
 		(nvm_status_t (*)(const uint32_t addr, const uint32_t size, const uint8_t * const p_data)) 	_25lcxxxx_write,
 		(nvm_status_t (*)(const uint32_t addr, const uint32_t size, uint8_t * const p_data))		_25lcxxxx_read,
-		NULL
+		(nvm_status_t (*)(const uint32_t addr, const uint32_t size))								_25lcxxxx_erase,
 	},
 
+	// User shall add more here if needed...
 
-
-	{	NULL,				NULL,				NULL,				NULL 	},		// FLASH
 
 	// USER CODE END...
 };
 
-
-
 /**
  * 		NVM region definitions
  *
- *	@brief	User shall specified predefined regions name, start, size
+ *	@brief	User shall specified NVM regions name, start, size
  *			and pointer to low level driver.
  *
- * 	@note	Spectial care with start address and its size!
+ * 	@note	Special care with start address and its size!
  */
 static const nvm_region_t g_nvm_region[ eNVM_REGION_NUM_OF ] =
 {
 	// USER CODE BEGIN...
 
-	// 	Name						Start address			Size [byte]			Low level driver
-	{	.name = "runtime par",		.start_addr = 0x0,		.size = 1024,		.p_driver = &g_mem_driver[ eNVM_MEM_DRV_EEPROM ]	},
-	{	.name = "calibartion par",	.start_addr = 0x0,		.size = 1024,		.p_driver = &g_mem_driver[ eNVM_MEM_DRV_FLASH ]		},
+	// -----------------------------------------------------------------------------------------------------------------------------------------------
+	// 	Region Name						Start address			Size [byte]			Low level driver
+	// -----------------------------------------------------------------------------------------------------------------------------------------------
+
+	{	.name = "device parameters",	.start_addr = 0x0,		.size = 1024,		.p_driver = &g_mem_driver[ eNVM_MEM_DRV_EEPROM ]				},
+
+	// -----------------------------------------------------------------------------------------------------------------------------------------------
+
+	// User shall add more here if needed...
 
 	// USER CODE END...
 };
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // Functions
 ////////////////////////////////////////////////////////////////////////////////
 
-const nvm_region_t * nvm_cfg_get_regions(void)
+////////////////////////////////////////////////////////////////////////////////
+/**
+*		Get configuration of NVM regions
+*
+* @return	Pointer to NVM configuration table
+*/
+////////////////////////////////////////////////////////////////////////////////
+const void * nvm_cfg_get_regions(void)
 {
 	return (const nvm_region_t*) &g_nvm_region;
-}
-
-const nvm_mem_drv_t * nvm_cfg_get_mem_drivers(void)
-{
-	return (const nvm_mem_drv_t*) &g_mem_driver;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

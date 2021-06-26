@@ -1,11 +1,15 @@
 ============================================================
- Version 1.0.0 (xx.xx.2021)
+ Version 1.0.0 (26.06.2021)
 ============================================================
  
  Brief:
- 	- 
+	- Initial release 
+	- Basic functionalities 
+ 	
  Features:
-   -  
+   - Single configuration table for definition of NVM regions
+   - Write/Read/Erase functionalities based on region
+   - Each region has its assigned low level memory driver
    
  Todo:
    - 
