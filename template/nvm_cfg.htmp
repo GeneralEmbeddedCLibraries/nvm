@@ -1,0 +1,117 @@
+////////////////////////////////////////////////////////////////////////////////
+/**
+*@file      nvm_cfg.h
+*@brief     Non-Volatile memory configuration file
+*@author    Ziga Miklosic
+*@date      04.06.2021
+*@version	V1.0.0
+*/
+////////////////////////////////////////////////////////////////////////////////
+/**
+*@addtogroup NVM_CFG
+* @{ <!-- BEGIN GROUP -->
+*/
+////////////////////////////////////////////////////////////////////////////////
+
+#ifndef _NVM_CFG_H_
+#define _NVM_CFG_H_
+
+////////////////////////////////////////////////////////////////////////////////
+// Includes
+////////////////////////////////////////////////////////////////////////////////
+#include <stdint.h>
+#include <stdbool.h>
+#include <stdlib.h>
+
+// USER CODE BEGIN...
+
+#include "project_config.h"
+
+// Debug communication port
+#include "middleware/debug_comm_port/com_dbg.h"
+
+// USER CODE END...
+
+////////////////////////////////////////////////////////////////////////////////
+// Definitions
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * 	NVM Region options
+ *
+ * 	@note 	Must always start with 0!
+ */
+typedef enum
+{
+	// USER CODE BEGIN...
+
+	eNVM_REGION_EEPROM_RUN_PAR = 0,
+
+	// USER CODE END...
+
+	eNVM_REGION_NUM_OF
+} nvm_region_name_t;
+
+/**
+ * 	NVM Low-level memory drivers
+ *
+ * 	@note 	Must always start with 0!
+ */
+typedef enum
+{
+	// USER CODE BEGIN...
+
+	eNVM_MEM_DRV_EEPROM = 0,
+
+	// User shall add more here if needed...
+
+	// USER CODE END...
+
+	eNVM_MEM_DRV_NUM_OF
+} nvm_mem_drv_name_t;
+
+
+// USER CODE START...
+
+/**
+ * 	Enable/Disable multiple access protection
+ */
+#define NVM_CFG_MUTEX_EN						( 1 )
+
+/**
+ * 	Enable/Disable debug mode
+ */
+#define NVM_CFG_DEBUG_EN						( 1 )
+
+/**
+ * 	Enable/Disable assertions
+ */
+#define NVM_CFG_ASSERT_EN						( 1 )
+
+/**
+ * 	Debug communication port macros
+ */
+#if ( 1 == NVM_CFG_DEBUG_EN )
+	#define NVM_DBG_PRINT( ... )				( com_dbg_print( eCOM_DBG_CH_NONE, (const char*) __VA_ARGS__ ))
+#else
+	#define NVM_DBG_PRINT( ... )				{ ; }
+
+#endif
+
+/**
+ * 	 Assertion macros
+ */
+#if ( 1 == NVM_CFG_ASSERT_EN )
+	#define NVM_ASSERT(x)						PROJECT_CONFIG_ASSERT(x)
+#else
+	#define NVM_ASSERT(x)						{ ; }
+#endif
+
+// USER CODE END
+
+////////////////////////////////////////////////////////////////////////////////
+// Functions Prototypes
+////////////////////////////////////////////////////////////////////////////////
+const void * nvm_cfg_get_regions(void);
+
+#endif // _NVM_CFG_H_
