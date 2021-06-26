@@ -10,6 +10,7 @@
    - Single configuration table for definition of NVM regions
    - Write/Read/Erase functionalities based on region
    - Each region has its assigned low level memory driver
+   - Multiple access protection 
    
  Todo:
    - 

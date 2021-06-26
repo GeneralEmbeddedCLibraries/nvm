@@ -74,6 +74,11 @@ typedef enum
 // USER CODE START...
 
 /**
+ * 	Enable/Disable multiple access protection
+ */
+#define NVM_CFG_MUTEX_EN						( 1 )
+
+/**
  * 	Enable/Disable debug mode
  */
 #define NVM_CFG_DEBUG_EN						( 1 )
