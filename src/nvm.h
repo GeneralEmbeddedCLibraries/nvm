@@ -1,10 +1,13 @@
+// Copyright (c) 2021 Ziga Miklosic
+// All Rights Reserved
+// This software is under MIT licence (https://opensource.org/licenses/MIT)
 ////////////////////////////////////////////////////////////////////////////////
 /**
 *@file      nvm.h
 *@brief     Non-Volatile memory
 *@author    Ziga Miklosic
 *@date      04.06.2021
-*@version	V1.0.0
+*@version	V1.0.1
 */
 ////////////////////////////////////////////////////////////////////////////////
 /**
@@ -33,7 +36,7 @@
  */
 #define NVM_VER_MAJOR		( 1 )
 #define NVM_VER_MINOR		( 0 )
-#define NVM_VER_DEVELOP		( 0 )
+#define NVM_VER_DEVELOP		( 1 )
 
 /**
  * 	Status
@@ -76,4 +79,9 @@ nvm_status_t 	nvm_write	(const nvm_region_name_t region, const uint32_t addr, co
 nvm_status_t 	nvm_read	(const nvm_region_name_t region, const uint32_t addr, const uint32_t size, uint8_t * const p_data);
 nvm_status_t 	nvm_erase	(const nvm_region_name_t region, const uint32_t addr, const uint32_t size);
 
+////////////////////////////////////////////////////////////////////////////////
+/**
+* @} <!-- END GROUP -->
+*/
+////////////////////////////////////////////////////////////////////////////////
 #endif // _NVM_H_
