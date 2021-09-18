@@ -83,13 +83,27 @@ typedef enum
 
 /**
  * 	Enable/Disable debug mode
+ *
+ * 	@note 	Disabled in release!
  */
 #define NVM_CFG_DEBUG_EN						( 1 )
 
+#ifndef DEBUG
+	#undef NVM_CFG_DEBUG_EN
+	#define NVM_CFG_DEBUG_EN 	( 0 )
+#endif
+
 /**
  * 	Enable/Disable assertions
+ *
+ *  @note Disabled in release!
  */
 #define NVM_CFG_ASSERT_EN						( 1 )
+
+#ifndef DEBUG
+	#undef NVM_CFG_ASSERT_EN
+	#define NVM_CFG_ASSERT_EN 	( 0 )
+#endif
 
 /**
  * 	Debug communication port macros
