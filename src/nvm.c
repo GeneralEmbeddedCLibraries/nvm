@@ -42,6 +42,19 @@ static bool gb_is_init = false;
  */
 static const nvm_region_t * gp_nvm_regions = NULL;
 
+
+#if ( NVM_CFG_DEBUG_EN )
+
+	/**
+	 * 	Status strings
+	 */
+	static const char * gs_status[] =
+	{
+		"OK",
+		"ERROR",
+	};
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////
 // Functions
 ////////////////////////////////////////////////////////////////////////////////
@@ -145,6 +158,8 @@ nvm_status_t nvm_write(const nvm_region_name_t region, const uint32_t addr, cons
 		}
 	#endif
 
+	NVM_DBG_PRINT( "NVM: Writing to addr: 0x%04X. Status: %s", addr, gs_status[status] );
+
 	return status;
 }
 
@@ -195,6 +210,8 @@ nvm_status_t nvm_read(const nvm_region_name_t region, const uint32_t addr, const
 		}
 	#endif
 
+	NVM_DBG_PRINT( "NVM: Reading from addr: 0x%04X. Status: %s", addr, gs_status[status] );
+
 	return status;
 }
 
@@ -243,6 +260,8 @@ nvm_status_t nvm_erase(const nvm_region_name_t region, const uint32_t addr, cons
 			status = eNVM_ERROR;
 		}
 	#endif
+
+	NVM_DBG_PRINT( "NVM: Erasing to addr: 0x%04X. Status: %s", addr, gs_status[status] );
 
 	return status;
 }
