@@ -79,6 +79,10 @@ nvm_status_t 	nvm_write	(const nvm_region_name_t region, const uint32_t addr, co
 nvm_status_t 	nvm_read	(const nvm_region_name_t region, const uint32_t addr, const uint32_t size, uint8_t * const p_data);
 nvm_status_t 	nvm_erase	(const nvm_region_name_t region, const uint32_t addr, const uint32_t size);
 
+#if ( NVM_CFG_DEBUG_EN )
+	const char * nvm_get_status_str		(const nvm_status_t status);
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////
 /**
 * @} <!-- END GROUP -->

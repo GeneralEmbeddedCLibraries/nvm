@@ -84,7 +84,7 @@ nvm_status_t nvm_init(void)
 		{
 			status |= gp_nvm_regions[reg_num].p_driver->pf_nvm_init();
 
-			NVM_DBG_PRINT( "NVM: Region <%s> initialize with status: %d", gp_nvm_regions[reg_num].name, status );
+			NVM_DBG_PRINT( "NVM: Region ""%s"" initialize with status: %s", gp_nvm_regions[reg_num].name, nvm_get_status_str( status ));
 		}
 	}
 
@@ -158,7 +158,7 @@ nvm_status_t nvm_write(const nvm_region_name_t region, const uint32_t addr, cons
 		}
 	#endif
 
-	NVM_DBG_PRINT( "NVM: Writing to addr: 0x%04X. Status: %s", addr, gs_status[status] );
+	NVM_DBG_PRINT( "NVM: Writing to addr: 0x%04X. Status: %s", addr, nvm_get_status_str( status ));
 
 	return status;
 }
@@ -210,7 +210,7 @@ nvm_status_t nvm_read(const nvm_region_name_t region, const uint32_t addr, const
 		}
 	#endif
 
-	NVM_DBG_PRINT( "NVM: Reading from addr: 0x%04X. Status: %s", addr, gs_status[status] );
+	NVM_DBG_PRINT( "NVM: Reading from addr: 0x%04X. Status: %s", addr, nvm_get_status_str( status ));
 
 	return status;
 }
@@ -261,10 +261,45 @@ nvm_status_t nvm_erase(const nvm_region_name_t region, const uint32_t addr, cons
 		}
 	#endif
 
-	NVM_DBG_PRINT( "NVM: Erasing to addr: 0x%04X. Status: %s", addr, gs_status[status] );
+	NVM_DBG_PRINT( "NVM: Erasing from addr: 0x%04X. Status: %s", addr, nvm_get_status_str( status ));
 
 	return status;
 }
+
+#if ( NVM_CFG_DEBUG_EN )
+
+	////////////////////////////////////////////////////////////////////////////////
+	/**
+	*		Get status string description
+	*
+	* @param[in]	status	- NVM status
+	* @return		str		- NVM status description
+	*/
+	////////////////////////////////////////////////////////////////////////////////
+	const char * nvm_get_status_str(const nvm_status_t status)
+	{
+		uint8_t i = 0;
+		const char * str = "N/A";
+
+		if ( eNVM_OK == status  )
+		{
+			str = (const char*) gs_status[0];
+		}
+		else
+		{
+			for ( i = 0; i < 8; i++ )
+			{
+				if ( status & ( 1<<i ))
+				{
+					str =  (const char*) gs_status[i+1];
+					break;
+				}
+			}
+		}
+
+		return str;
+	}
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 /**
