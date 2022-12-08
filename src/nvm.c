@@ -72,9 +72,6 @@ nvm_status_t nvm_init(void)
 	nvm_status_t 	status 		= eNVM_OK;
 	uint8_t			mem_drv_num	= 0U;
 
-	// Check for init
-	NVM_ASSERT( false == gb_is_init )
-
 	if ( false == gb_is_init )
 	{
 		// Get table configuration
@@ -100,6 +97,10 @@ nvm_status_t nvm_init(void)
 		{
 			gb_is_init = true;
 		}
+	}
+	else
+	{
+		status = eNVM_ERROR;
 	}
 
 	return status;
