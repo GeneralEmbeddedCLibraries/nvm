@@ -45,7 +45,6 @@ typedef enum
 {
 	eNVM_OK 	= 0,		/**<Normal operation */
 	eNVM_ERROR	= 0x01,		/**<General error */
-
 } nvm_status_t;
 
 /**
