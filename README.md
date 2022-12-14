@@ -97,6 +97,7 @@ typedef enum
 	// USER CODE BEGIN...
 
 	eNVM_REGION_EEPROM_RUN_PAR = 0,
+	eNVM_REGION_EEPROM_CLI,
 
 	// USER CODE END...
 
@@ -122,7 +123,7 @@ typedef enum
 } nvm_mem_drv_name_t;
 ```
 
-4. Connect NVM memory driver with an wanted device driver
+4. Connect Memory device low level driver with NVM module
 
 ```C
 /**
@@ -145,7 +146,8 @@ static const nvm_mem_driver_t g_mem_driver[ eNVM_MEM_DRV_NUM_OF ]=
 {
 	// USER CODE BEGIN...
 
-	// EEPROM LOW LEVEL MEMORY DRIVERS
+	// EEPROM LOW LEVEL MEMORY DRIVER
+	[eNVM_MEM_DRV_EEPROM] = 
 	{
 		(nvm_status_t (*)(void))                                                                    _25lcxxxx_init,
 		(nvm_status_t (*)(const uint32_t addr, const uint32_t size, const uint8_t * const p_data))  _25lcxxxx_write,
@@ -175,10 +177,11 @@ static const nvm_region_t g_nvm_region[ eNVM_REGION_NUM_OF ] =
 	// USER CODE BEGIN...
 
 	// ----------------------------------------------------------------------------------------------------------------------------------------------------
-	//                               Region Name                  Start address         Size [byte]      Low level driver
+	//                               Region Name                  Start address           Size [byte]      Low level driver
 	// ----------------------------------------------------------------------------------------------------------------------------------------------------
 
-	[eNVM_REGION_EEPROM_RUN_PAR] = { .name = "device parameters", .start_addr = 0x00,   .size = 1024,    .p_driver = &g_mem_driver[ eNVM_MEM_DRV_EEPROM ] },
+	[eNVM_REGION_EEPROM_RUN_PAR] = { .name = "device parameters", .start_addr = 0x0000,   .size = 1024,    .p_driver = &g_mem_driver[ eNVM_MEM_DRV_EEPROM ] },
+	[eNVM_REGION_EEPROM_CLI]     = { .name = "CLI settings",      .start_addr = 0x0400,   .size = 256,     .p_driver = &g_mem_driver[ eNVM_MEM_DRV_EEPROM ] },
 
 	// ----------------------------------------------------------------------------------------------------------------------------------------------------
 
