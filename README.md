@@ -29,8 +29,8 @@ typedef enum
 {
 	eMEM_DRV_OK         = 0,		/**<Normal operation status code */
 	eMEM_DRV_ERROR_1    = 0x01,		/**<Error 1 status code */
-	eMEM_DRV_ERROR_2    = 0x01,		/**<Error 2 status code */
-	eMEM_DRV_ERROR_3    = 0x01,		/**<Error 3 status code */
+	eMEM_DRV_ERROR_2    = 0x02,		/**<Error 2 status code */
+	eMEM_DRV_ERROR_3    = 0x04,		/**<Error 3 status code */
 
 	// ...
 } mem_status_t;
@@ -49,8 +49,22 @@ typedef struct nvm_mem_driver_s
 	nvm_status_t (*pf_nvm_read)   (const uint32_t addr, const uint32_t size, uint8_t * const p_data);
 	nvm_status_t (*pf_nvm_erase)  (const uint32_t addr, const uint32_t size);
 } nvm_mem_driver_t;
-
 ```
+
+**NOTICE: In case memory drivers don't have all of the wanted functions, NULL value can be placed inside interface configuration table.**
+Example of not having de-initialization function provided by memory driver:
+```C
+// EEPROM LOW LEVEL MEMORY DRIVER
+[eNVM_MEM_DRV_EEPROM ] = 
+{
+	.pf_nvm_init   = (nvm_status_t (*)(void))                                                                   _24aa64t_init,
+	.pf_nvm_deinit = NULL,
+	.pf_nvm_write  = (nvm_status_t (*)(const uint32_t addr, const uint32_t size, const uint8_t * const p_data)) _24aa64t_write,
+	.pf_nvm_read   = (nvm_status_t (*)(const uint32_t addr, const uint32_t size, uint8_t * const p_data))       _24aa64t_read,
+	.pf_nvm_erase  = (nvm_status_t (*)(const uint32_t addr, const uint32_t size))                               _24aa64t_erase,
+}
+```
+
 
 ## **General Embedded C Libraries Ecosystem**
 In order to be part of *General Embedded C Libraries Ecosystem* this module must be placed in following path: 
