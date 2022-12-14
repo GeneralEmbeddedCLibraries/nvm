@@ -12,13 +12,31 @@ NVM module can interface with one or multiple memory device drivers and furtherm
 
 ### **1. Memory device low level driver**
 In order to make sense to use NVM at least one memory device driver must be linked to NVM module. Interface between NVM module and memory device driver is predefined. Meaning that all drivers shall have following function prototypes:
- - *nvm_status_t mem_drv_init(void)*
- - *nvm_status_t mem_drv_deinit(void)*
- - *nvm_status_t mem_drv_write(const uint32_t addr, const uint32_t size, const uint8_t * const p_data)*
- - *nvm_status_t mem_drv_read(const uint32_t addr, const uint32_t size, uint8_t * const p_data)*
- - *nvm_status_t mem_drv_erase(const uint32_t addr, const uint32_t size)*
+ - *mem_status_t mem_drv_init(void)*
+ - *mem_status_t mem_drv_deinit(void)*
+ - *mem_status_t mem_drv_write(const uint32_t addr, const uint32_t size, const uint8_t * const p_data)*
+ - *mem_status_t mem_drv_read(const uint32_t addr, const uint32_t size, uint8_t * const p_data)*
+ - *mem_status_t mem_drv_erase(const uint32_t addr, const uint32_t size)*
 
-C implementation of function pointers for memory drivers:
+**IMPORTANT: Memory drivers must return status code compatible with NVM module. Memory driver API functions shall return 0 in case of no errors!!!**
+
+Therefore memory driver shall define status as:
+```C
+/**
+ * 	Memory driver status
+ */
+typedef enum
+{
+	eMEM_DRV_OK			= 0,		/**<Normal operation status code */
+	eMEM_DRV_ERROR_1	= 0x01,		/**<Error 1 status code */
+	eMEM_DRV_ERROR_2	= 0x01,		/**<Error 1 status code */
+	eMEM_DRV_ERROR_3	= 0x01,		/**<Error 1 status code */
+
+	// ...
+} mem_status_t;
+```
+
+Function pointers structure definition for memory drivers:
 ```C
 /**
  * 	Memory device driver
