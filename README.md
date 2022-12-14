@@ -43,11 +43,11 @@ Function pointers structure definition for memory drivers:
  */
 typedef struct nvm_mem_driver_s
 {
-	nvm_status_t (*pf_nvm_init)		(void);
-	nvm_status_t (*pf_nvm_deinit)	(void);
-	nvm_status_t (*pf_nvm_write)	(const uint32_t addr, const uint32_t size, const uint8_t * const p_data);
-	nvm_status_t (*pf_nvm_read)		(const uint32_t addr, const uint32_t size, uint8_t * const p_data);
-	nvm_status_t (*pf_nvm_erase)	(const uint32_t addr, const uint32_t size);
+	nvm_status_t (*pf_nvm_init)   (void);
+	nvm_status_t (*pf_nvm_deinit) (void);
+	nvm_status_t (*pf_nvm_write)  (const uint32_t addr, const uint32_t size, const uint8_t * const p_data);
+	nvm_status_t (*pf_nvm_read)   (const uint32_t addr, const uint32_t size, uint8_t * const p_data);
+	nvm_status_t (*pf_nvm_erase)  (const uint32_t addr, const uint32_t size);
 } nvm_mem_driver_t;
 
 ```
@@ -147,10 +147,10 @@ static const nvm_mem_driver_t g_mem_driver[ eNVM_MEM_DRV_NUM_OF ]=
 
 	// EEPROM LOW LEVEL MEMORY DRIVERS
 	{
-		(nvm_status_t (*)(void))																	_25lcxxxx_init,
-		(nvm_status_t (*)(const uint32_t addr, const uint32_t size, const uint8_t * const p_data)) 	_25lcxxxx_write,
-		(nvm_status_t (*)(const uint32_t addr, const uint32_t size, uint8_t * const p_data))		_25lcxxxx_read,
-		(nvm_status_t (*)(const uint32_t addr, const uint32_t size))								_25lcxxxx_erase,
+		(nvm_status_t (*)(void))                                                                    _25lcxxxx_init,
+		(nvm_status_t (*)(const uint32_t addr, const uint32_t size, const uint8_t * const p_data))  _25lcxxxx_write,
+		(nvm_status_t (*)(const uint32_t addr, const uint32_t size, uint8_t * const p_data))        _25lcxxxx_read,
+		(nvm_status_t (*)(const uint32_t addr, const uint32_t size))                                _25lcxxxx_erase,
 	},
 
 	// User shall add more here if needed...
@@ -178,7 +178,7 @@ static const nvm_region_t g_nvm_region[ eNVM_REGION_NUM_OF ] =
 	// 	Region Name						Start address			Size [byte]			Low level driver
 	// -----------------------------------------------------------------------------------------------------------------------------------------------
 
-	{	.name = "device parameters",	.start_addr = 0x0,		.size = 1024,		.p_driver = &g_mem_driver[ eNVM_MEM_DRV_EEPROM ]				},
+	[eNVM_REGION_EEPROM_RUN_PAR] = {	.name = "device parameters",	.start_addr = 0x0,		.size = 1024,		.p_driver = &g_mem_driver[ eNVM_MEM_DRV_EEPROM ]				},
 
 	// -----------------------------------------------------------------------------------------------------------------------------------------------
 
