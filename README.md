@@ -27,10 +27,10 @@ Therefore memory driver shall define status as:
  */
 typedef enum
 {
-	eMEM_DRV_OK			= 0,		/**<Normal operation status code */
-	eMEM_DRV_ERROR_1	= 0x01,		/**<Error 1 status code */
-	eMEM_DRV_ERROR_2	= 0x01,		/**<Error 1 status code */
-	eMEM_DRV_ERROR_3	= 0x01,		/**<Error 1 status code */
+	eMEM_DRV_OK         = 0,		/**<Normal operation status code */
+	eMEM_DRV_ERROR_1    = 0x01,		/**<Error 1 status code */
+	eMEM_DRV_ERROR_2    = 0x01,		/**<Error 1 status code */
+	eMEM_DRV_ERROR_3    = 0x01,		/**<Error 1 status code */
 
 	// ...
 } mem_status_t;
@@ -174,13 +174,13 @@ static const nvm_region_t g_nvm_region[ eNVM_REGION_NUM_OF ] =
 {
 	// USER CODE BEGIN...
 
-	// -----------------------------------------------------------------------------------------------------------------------------------------------
-	// 	Region Name						Start address			Size [byte]			Low level driver
-	// -----------------------------------------------------------------------------------------------------------------------------------------------
+	// ----------------------------------------------------------------------------------------------------------------------------------------------------
+	//                               Region Name                  Start address         Size [byte]      Low level driver
+	// ----------------------------------------------------------------------------------------------------------------------------------------------------
 
-	[eNVM_REGION_EEPROM_RUN_PAR] = {	.name = "device parameters",	.start_addr = 0x0,		.size = 1024,		.p_driver = &g_mem_driver[ eNVM_MEM_DRV_EEPROM ]				},
+	[eNVM_REGION_EEPROM_RUN_PAR] = { .name = "device parameters", .start_addr = 0x00,   .size = 1024,    .p_driver = &g_mem_driver[ eNVM_MEM_DRV_EEPROM ] },
 
-	// -----------------------------------------------------------------------------------------------------------------------------------------------
+	// ----------------------------------------------------------------------------------------------------------------------------------------------------
 
 	// User shall add more here if needed...
 
