@@ -73,7 +73,7 @@ root/middleware/nvm/nvm/"module_space"
 **GENERAL NOTICE: Put all user code between sections: USER CODE BEGIN & USER CODE END!**
 
 1. Copy template files to root directory of module.
-2. Configure CLI module for application needs. Configuration options are following:
+2. Configure NVM module for application needs. Configuration options are following:
 
 | Configuration | Description |
 | --- | --- |
