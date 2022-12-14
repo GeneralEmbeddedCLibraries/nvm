@@ -64,10 +64,11 @@ static const nvm_mem_driver_t g_mem_driver[ eNVM_MEM_DRV_NUM_OF ]=
 	// EEPROM LOW LEVEL MEMORY DRIVERS
 	[eNVM_MEM_DRV_EEPROM ] = 
 	{
-		(nvm_status_t (*)(void))																	_24aa64t_init,
-		(nvm_status_t (*)(const uint32_t addr, const uint32_t size, const uint8_t * const p_data)) 	_24aa64t_write,
-		(nvm_status_t (*)(const uint32_t addr, const uint32_t size, uint8_t * const p_data))		_24aa64t_read,
-		(nvm_status_t (*)(const uint32_t addr, const uint32_t size))								_24aa64t_erase,
+		.pf_nvm_init   = (nvm_status_t (*)(void))																	_24aa64t_init,
+		.pf_nvm_deinit = (nvm_status_t (*)(void))																	_24aa64t_deinit,
+		.pf_nvm_write  = (nvm_status_t (*)(const uint32_t addr, const uint32_t size, const uint8_t * const p_data)) _24aa64t_write,
+		.pf_nvm_read   = (nvm_status_t (*)(const uint32_t addr, const uint32_t size, uint8_t * const p_data))		_24aa64t_read,
+		.pf_nvm_erase  = (nvm_status_t (*)(const uint32_t addr, const uint32_t size))								_24aa64t_erase,
 	},
 
 	// User shall add more here if needed...
