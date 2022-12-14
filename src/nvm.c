@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Ziga Miklosic
+// Copyright (c) 2022 Ziga Miklosic
 // All Rights Reserved
 // This software is under MIT licence (https://opensource.org/licenses/MIT)
 ////////////////////////////////////////////////////////////////////////////////
@@ -6,8 +6,8 @@
 *@file      nvm.c
 *@brief     Non-Volatile memory
 *@author    Ziga Miklosic
-*@date      04.06.2021
-*@version	V1.0.1
+*@date      14.12.2022
+*@version	V2.0.0
 */
 ////////////////////////////////////////////////////////////////////////////////
 /**
@@ -42,6 +42,18 @@ static bool gb_is_init = false;
  */
 static const nvm_region_t * gp_nvm_regions = NULL;
 
+#if ( NVM_CFG_DEBUG_EN )
+
+	/**
+	 * 	Status strings
+	 */
+	static const char * gs_status[] =
+	{
+		"OK",
+		"ERROR",
+	};
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////
 // Functions
 ////////////////////////////////////////////////////////////////////////////////
@@ -50,52 +62,108 @@ static const nvm_region_t * gp_nvm_regions = NULL;
 /**
 *		Initialized NVM regions
 *
-* @brief	Low level memory interface drivers are being initialized.
-*
 * @return 	status - Status of initialization
 */
 ////////////////////////////////////////////////////////////////////////////////
 nvm_status_t nvm_init(void)
 {
-	nvm_status_t 	status 	= eNVM_OK;
-	uint8_t			reg_num	= 0U;
+	nvm_status_t status = eNVM_OK;
 
-	// Get table configuration
-	gp_nvm_regions = nvm_cfg_get_regions();
-	NVM_ASSERT( NULL != gp_nvm_regions );
-
-	// Low level driver init
-	for ( reg_num = 0; reg_num < eNVM_REGION_NUM_OF; reg_num++ )
+	if ( false == gb_is_init )
 	{
-		if ( NULL != gp_nvm_regions[reg_num].p_driver->pf_nvm_init )
-		{
-			status |= gp_nvm_regions[reg_num].p_driver->pf_nvm_init();
+		// Get table configuration
+		gp_nvm_regions = nvm_cfg_get_regions();
+		NVM_ASSERT( NULL != gp_nvm_regions );
 
-			NVM_DBG_PRINT( "NVM: Region <%s> initialize with status: %d", gp_nvm_regions[reg_num].name, status );
+		// Low level driver init
+		for ( uint32_t mem_drv_num = 0; mem_drv_num < eNVM_MEM_DRV_NUM_OF; mem_drv_num++ )
+		{
+			if ( NULL != gp_nvm_regions[mem_drv_num].p_driver->pf_nvm_init )
+			{
+				status |= gp_nvm_regions[mem_drv_num].p_driver->pf_nvm_init();
+
+				NVM_DBG_PRINT( "NVM: Low level memory driver #%d initialize with status: %s", mem_drv_num, nvm_get_status_str( status ));
+			}
+		}
+
+		// Init NVM interface
+		status |= nvm_if_init();
+
+		// Init success
+		if ( eNVM_OK == status )
+		{
+			gb_is_init = true;
 		}
 	}
-
-	// Init NVM interface
-	status |= nvm_if_init();
-
-	NVM_ASSERT( eNVM_OK == status );
-
-	// Init done
-	gb_is_init = true;
+	else
+	{
+		status = eNVM_ERROR;
+	}
 
 	return status;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 /**
-*		Get NVM initialization state
+*		De-Initialized NVM memory drivers
 *
-* @return 	gb_is_init - Initialization flag
+*
+* @return 	status - Status of initialization
 */
 ////////////////////////////////////////////////////////////////////////////////
-bool nvm_is_init(void)
+nvm_status_t nvm_deinit(void)
 {
-	return gb_is_init;
+    nvm_status_t status = eNVM_OK;
+    
+    if ( true == gb_is_init )
+    {
+        // Low level driver de-init
+        for ( uint32_t mem_drv_num = 0; mem_drv_num < eNVM_MEM_DRV_NUM_OF; mem_drv_num++ )
+        {
+            if ( NULL != gp_nvm_regions[mem_drv_num].p_driver->pf_nvm_deinit )
+            {
+                status |= gp_nvm_regions[mem_drv_num].p_driver->pf_nvm_deinit();
+
+                NVM_DBG_PRINT( "NVM: Low level memory driver #%d de-initialize with status: %s", mem_drv_num, nvm_get_status_str( status ));
+            }
+        } 
+
+        // De-init success
+        if ( eNVM_OK == status )
+        {
+            gb_is_init = false;
+        }
+    }
+    else
+    {
+        status = eNVM_ERROR;
+    }
+
+    return status;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/**
+*		Get NVM initialization state
+*
+* @param[out]   p_is_init   - Pointer to init flag
+* @return       status      - Status of operation
+*/
+////////////////////////////////////////////////////////////////////////////////
+nvm_status_t nvm_is_init(bool * const p_is_init)
+{
+    nvm_status_t status = eNVM_OK;
+
+    if ( NULL != p_is_init )
+    {
+        *p_is_init = gb_is_init;
+    }
+    else
+    {
+        status = eNVM_ERROR;
+    }
+
+    return status;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -124,26 +192,46 @@ nvm_status_t nvm_write(const nvm_region_name_t region, const uint32_t addr, cons
 	NVM_ASSERT(		(( addr + gp_nvm_regions[region].start_addr ) < ( gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size ))
 				&& 	(( addr + gp_nvm_regions[region].start_addr + size ) < ( addr + gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size )));
 
-	#if ( 1 == NVM_CFG_MUTEX_EN )
-		if ( eNVM_OK == nvm_if_aquire_mutex())
+	// Check init
+	if ( true == gb_is_init )
+	{
+		// Check valid input
+		if ( 	( region < eNVM_REGION_NUM_OF )
+				&&	( 	(( addr + gp_nvm_regions[region].start_addr ) < ( gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size ))
+					&& 	(( addr + gp_nvm_regions[region].start_addr + size ) < ( addr + gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size ))))
 		{
-	#endif
-			// Write
-			if ( eNVM_OK != gp_nvm_regions[region].p_driver->pf_nvm_write( gp_nvm_regions[region].start_addr + addr, size, p_data ))
-			{
-				status = eNVM_ERROR;
-			}
+			#if ( 1 == NVM_CFG_MUTEX_EN )
+				if ( eNVM_OK == nvm_if_aquire_mutex())
+				{
+			#endif
+					// Write
+					if ( eNVM_OK != gp_nvm_regions[region].p_driver->pf_nvm_write( gp_nvm_regions[region].start_addr + addr, size, p_data ))
+					{
+						status = eNVM_ERROR;
+					}
 
-	#if ( 1 == NVM_CFG_MUTEX_EN )
-			nvm_if_release_mutex();
+			#if ( 1 == NVM_CFG_MUTEX_EN )
+					nvm_if_release_mutex();
+				}
+
+				// Mutex not acquire
+				else
+				{
+					status = eNVM_ERROR;
+				}
+			#endif
 		}
-
-		// Mutex not acquire
 		else
 		{
 			status = eNVM_ERROR;
 		}
-	#endif
+	}
+	else
+	{
+		status = eNVM_ERROR;
+	}
+
+	NVM_DBG_PRINT( "NVM: Writing to addr: 0x%04X. Status: %s", addr, nvm_get_status_str( status ));
 
 	return status;
 }
@@ -174,26 +262,46 @@ nvm_status_t nvm_read(const nvm_region_name_t region, const uint32_t addr, const
 	NVM_ASSERT(		(( addr + gp_nvm_regions[region].start_addr ) < ( gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size ))
 				&& 	(( addr + gp_nvm_regions[region].start_addr + size ) < ( addr + gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size )));
 
-	#if ( 1 == NVM_CFG_MUTEX_EN )
-		if ( eNVM_OK == nvm_if_aquire_mutex())
+	// Check init
+	if ( true == gb_is_init )
+	{
+		// Check valid input
+		if ( 	( region < eNVM_REGION_NUM_OF )
+				&&	( 	(( addr + gp_nvm_regions[region].start_addr ) < ( gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size ))
+					&& 	(( addr + gp_nvm_regions[region].start_addr + size ) < ( addr + gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size ))))
 		{
-	#endif
-			// Read
-			if ( eNVM_OK != gp_nvm_regions[region].p_driver->pf_nvm_read( gp_nvm_regions[region].start_addr + addr, size, p_data ))
-			{
-				status = eNVM_ERROR;
-			}
+			#if ( 1 == NVM_CFG_MUTEX_EN )
+				if ( eNVM_OK == nvm_if_aquire_mutex())
+				{
+			#endif
+					// Read
+					if ( eNVM_OK != gp_nvm_regions[region].p_driver->pf_nvm_read( gp_nvm_regions[region].start_addr + addr, size, p_data ))
+					{
+						status = eNVM_ERROR;
+					}
 
-	#if ( 1 == NVM_CFG_MUTEX_EN )
-			nvm_if_release_mutex();
+			#if ( 1 == NVM_CFG_MUTEX_EN )
+					nvm_if_release_mutex();
+				}
+
+				// Mutex not acquire
+				else
+				{
+					status = eNVM_ERROR;
+				}
+			#endif
 		}
-
-		// Mutex not acquire
 		else
 		{
 			status = eNVM_ERROR;
 		}
-	#endif
+	}
+	else
+	{
+		status = eNVM_ERROR;
+	}
+
+	NVM_DBG_PRINT( "NVM: Reading from addr: 0x%04X. Status: %s", addr, nvm_get_status_str( status ));
 
 	return status;
 }
@@ -223,29 +331,84 @@ nvm_status_t nvm_erase(const nvm_region_name_t region, const uint32_t addr, cons
 	NVM_ASSERT(		(( addr + gp_nvm_regions[region].start_addr ) < ( gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size ))
 				&& 	(( addr + gp_nvm_regions[region].start_addr + size ) < ( addr + gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size )));
 
-	#if ( 1 == NVM_CFG_MUTEX_EN )
-		if ( eNVM_OK == nvm_if_aquire_mutex())
+	// Check init
+	if ( true == gb_is_init )
+	{
+		// Check valid input
+		if ( 	( region < eNVM_REGION_NUM_OF )
+				&&	( 	(( addr + gp_nvm_regions[region].start_addr ) < ( gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size ))
+					&& 	(( addr + gp_nvm_regions[region].start_addr + size ) < ( addr + gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size ))))
 		{
-	#endif
-			// Erase
-			if ( eNVM_OK != gp_nvm_regions[region].p_driver->pf_nvm_erase( gp_nvm_regions[region].start_addr + addr, size ))
-			{
-				status = eNVM_ERROR;
-			}
+			#if ( 1 == NVM_CFG_MUTEX_EN )
+				if ( eNVM_OK == nvm_if_aquire_mutex())
+				{
+			#endif
+					// Erase
+					if ( eNVM_OK != gp_nvm_regions[region].p_driver->pf_nvm_erase( gp_nvm_regions[region].start_addr + addr, size ))
+					{
+						status = eNVM_ERROR;
+					}
 
-	#if ( 1 == NVM_CFG_MUTEX_EN )
-			nvm_if_release_mutex();
+			#if ( 1 == NVM_CFG_MUTEX_EN )
+					nvm_if_release_mutex();
+				}
+
+				// Mutex not acquire
+				else
+				{
+					status = eNVM_ERROR;
+				}
+			#endif
 		}
-
-		// Mutex not acquire
 		else
 		{
 			status = eNVM_ERROR;
 		}
-	#endif
+	}
+	else
+	{
+		status = eNVM_ERROR;
+	}
+
+	NVM_DBG_PRINT( "NVM: Erasing from addr: 0x%04X. Status: %s", addr, nvm_get_status_str( status ));
 
 	return status;
 }
+
+#if ( NVM_CFG_DEBUG_EN )
+
+	////////////////////////////////////////////////////////////////////////////////
+	/**
+	*		Get status string description
+	*
+	* @param[in]	status	- NVM status
+	* @return		str		- NVM status description
+	*/
+	////////////////////////////////////////////////////////////////////////////////
+	const char * nvm_get_status_str(const nvm_status_t status)
+	{
+		uint8_t i = 0;
+		const char * str = "N/A";
+
+		if ( eNVM_OK == status  )
+		{
+			str = (const char*) gs_status[0];
+		}
+		else
+		{
+			for ( i = 0; i < 8; i++ )
+			{
+				if ( status & ( 1<<i ))
+				{
+					str =  (const char*) gs_status[i+1];
+					break;
+				}
+			}
+		}
+
+		return str;
+	}
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 /**

@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Ziga Miklosic
+// Copyright (c) 2022 Ziga Miklosic
 // All Rights Reserved
 // This software is under MIT licence (https://opensource.org/licenses/MIT)
 ////////////////////////////////////////////////////////////////////////////////
@@ -6,8 +6,8 @@
 *@file      nvm.h
 *@brief     Non-Volatile memory
 *@author    Ziga Miklosic
-*@date      04.06.2021
-*@version	V1.0.1
+*@date      14.12.2022
+*@version	V2.0.0
 */
 ////////////////////////////////////////////////////////////////////////////////
 /**
@@ -34,9 +34,9 @@
 /**
  * 	Module version
  */
-#define NVM_VER_MAJOR		( 1 )
+#define NVM_VER_MAJOR		( 2 )
 #define NVM_VER_MINOR		( 0 )
-#define NVM_VER_DEVELOP		( 1 )
+#define NVM_VER_DEVELOP		( 0 )
 
 /**
  * 	Status
@@ -45,7 +45,6 @@ typedef enum
 {
 	eNVM_OK 	= 0,		/**<Normal operation */
 	eNVM_ERROR	= 0x01,		/**<General error */
-
 } nvm_status_t;
 
 /**
@@ -54,6 +53,7 @@ typedef enum
 typedef struct nvm_mem_driver_s
 {
 	nvm_status_t (*pf_nvm_init)		(void);
+	nvm_status_t (*pf_nvm_deinit)	(void);
 	nvm_status_t (*pf_nvm_write)	(const uint32_t addr, const uint32_t size, const uint8_t * const p_data);
 	nvm_status_t (*pf_nvm_read)		(const uint32_t addr, const uint32_t size, uint8_t * const p_data);
 	nvm_status_t (*pf_nvm_erase)	(const uint32_t addr, const uint32_t size);
@@ -74,10 +74,15 @@ typedef struct nvm_region_s
 // Functions Prototypes
 ////////////////////////////////////////////////////////////////////////////////
 nvm_status_t 	nvm_init	(void);
-bool			nvm_is_init	(void);
+nvm_status_t    nvm_deinit  (void);
+nvm_status_t    nvm_is_init	(bool * const p_is_init);
 nvm_status_t 	nvm_write	(const nvm_region_name_t region, const uint32_t addr, const uint32_t size, const uint8_t * const p_data);
 nvm_status_t 	nvm_read	(const nvm_region_name_t region, const uint32_t addr, const uint32_t size, uint8_t * const p_data);
 nvm_status_t 	nvm_erase	(const nvm_region_name_t region, const uint32_t addr, const uint32_t size);
+
+#if ( NVM_CFG_DEBUG_EN )
+	const char * nvm_get_status_str		(const nvm_status_t status);
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 /**
