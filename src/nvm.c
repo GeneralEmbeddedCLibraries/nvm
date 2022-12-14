@@ -62,8 +62,6 @@ static const nvm_region_t * gp_nvm_regions = NULL;
 /**
 *		Initialized NVM regions
 *
-* @brief	Low level memory interface drivers are being initialized.
-*
 * @return 	status - Status of initialization
 */
 ////////////////////////////////////////////////////////////////////////////////
@@ -108,14 +106,44 @@ nvm_status_t nvm_init(void)
 
 ////////////////////////////////////////////////////////////////////////////////
 /**
-*		Get NVM initialization state
+*		De-Initialized NVM memory drivers
 *
-* @return 	gb_is_init - Initialization flag
+*
+* @return 	status - Status of initialization
 */
 ////////////////////////////////////////////////////////////////////////////////
-bool nvm_is_init(void)
+nvm_status_t nvm_deinit(void)
 {
-	return gb_is_init;
+    nvm_status_t status = eNVM_OK;
+    
+    // TODO: 
+
+    return status;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+/**
+*		Get NVM initialization state
+*
+* @param[out]   p_is_init   - Pointer to init flag
+* @return       status      - Status of operation
+*/
+////////////////////////////////////////////////////////////////////////////////
+nvm_status_t nvm_is_init(bool * const p_is_init)
+{
+    nvm_status_t status = eNVM_OK;
+
+    if ( NULL != p_is_init )
+    {
+        *p_is_init = gb_is_init;
+    }
+    else
+    {
+        status = eNVM_ERROR;
+    }
+
+    return status;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
