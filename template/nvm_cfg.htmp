@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Ziga Miklosic
+// Copyright (c) 2022 Ziga Miklosic
 // All Rights Reserved
 // This software is under MIT licence (https://opensource.org/licenses/MIT)
 ////////////////////////////////////////////////////////////////////////////////
@@ -6,8 +6,8 @@
 *@file      nvm_cfg.h
 *@brief     Non-Volatile memory configuration file
 *@author    Ziga Miklosic
-*@date      04.06.2021
-*@version	V1.0.1
+*@date      14.12.2022
+*@version	V2.0.0
 */
 ////////////////////////////////////////////////////////////////////////////////
 /**
@@ -31,7 +31,7 @@
 #include "project_config.h"
 
 // Debug communication port
-#include "middleware/debug_comm_port/com_dbg.h"
+#include "middleware/cli/cli/src/cli.h"
 
 // USER CODE END...
 
@@ -48,7 +48,8 @@ typedef enum
 {
 	// USER CODE BEGIN...
 
-	eNVM_REGION_EEPROM_RUN_PAR = 0,
+	eNVM_REGION_EEPROM_DEV_PAR = 0,		/**<Device parameters region */
+	eNVM_REGION_EEPROM_CLI,				/**<CLI streaming info region */
 
 	// USER CODE END...
 
@@ -79,37 +80,23 @@ typedef enum
 /**
  * 	Enable/Disable multiple access protection
  */
-#define NVM_CFG_MUTEX_EN						( 1 )
+#define NVM_CFG_MUTEX_EN						( 0 )
 
 /**
  * 	Enable/Disable debug mode
- *
- * 	@note 	Disabled in release!
  */
-#define NVM_CFG_DEBUG_EN						( 1 )
-
-#ifndef DEBUG
-	#undef NVM_CFG_DEBUG_EN
-	#define NVM_CFG_DEBUG_EN 	( 0 )
-#endif
+#define NVM_CFG_DEBUG_EN						( 0 )
 
 /**
  * 	Enable/Disable assertions
- *
- *  @note Disabled in release!
  */
 #define NVM_CFG_ASSERT_EN						( 1 )
-
-#ifndef DEBUG
-	#undef NVM_CFG_ASSERT_EN
-	#define NVM_CFG_ASSERT_EN 	( 0 )
-#endif
 
 /**
  * 	Debug communication port macros
  */
 #if ( 1 == NVM_CFG_DEBUG_EN )
-	#define NVM_DBG_PRINT( ... )				( com_dbg_print( eCOM_DBG_CH_NONE, (const char*) __VA_ARGS__ ))
+	#define NVM_DBG_PRINT( ... )				( cli_printf( __VA_ARGS__ ))
 #else
 	#define NVM_DBG_PRINT( ... )				{ ; }
 

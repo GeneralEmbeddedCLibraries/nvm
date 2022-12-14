@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Ziga Miklosic
+// Copyright (c) 2022 Ziga Miklosic
 // All Rights Reserved
 // This software is under MIT licence (https://opensource.org/licenses/MIT)
 ////////////////////////////////////////////////////////////////////////////////
@@ -6,8 +6,8 @@
 *@file      nvm_if.h
 *@brief     Non-Volatile memory interface file
 *@author    Ziga Miklosic
-*@date      26.06.2021
-*@version	V1.0.1
+*@date      14.12.2022
+*@version	V2.0.0
 */
 ////////////////////////////////////////////////////////////////////////////////
 /**
@@ -27,7 +27,6 @@
 
 // USER CODE BEGIN...
 
-#include "cmsis_os2.h"
 
 // USER CODE END...
 
@@ -37,12 +36,6 @@
 
 // USER DEFINITIONS BEGIN...
 
-/**
- * 	NVM mutex timeout
- *
- * 	Unit: ms
- */
-#define NVM_CFG_MUTEX_TIMEOUT_MS				( 10 )
 
 // USER DEFINITIONS END...
 
@@ -52,15 +45,6 @@
 
 // USER VARIABLES BEGIN...
 
-/**
- * 	NVM OS mutex
- */
-static osMutexId_t	g_nvm_mutex_id = NULL;
-const osMutexAttr_t g_nvm_mutex_attr =
-{
-    .name 		= "NVM",
-    .attr_bits 	= ( osMutexPrioInherit ),
-};
 
 // USER VARIABLES END...
 
@@ -83,16 +67,7 @@ nvm_status_t nvm_if_init(void)
 
 	// USER CODE BEGIN...
 
-	// Create mutex
-	g_nvm_mutex_id = osMutexNew( &g_nvm_mutex_attr );
-
-	if ( NULL == g_nvm_mutex_id )
-	{
-		status = eNVM_ERROR;
-	}
-
 	// USER CODE END...
-
 
 	return status;
 }
@@ -116,15 +91,6 @@ nvm_status_t nvm_if_aquire_mutex(void)
 	nvm_status_t status = eNVM_OK;
 
 	// USER CODE BEGIN...
-
-	if ( osOK == osMutexAcquire( g_nvm_mutex_id, NVM_CFG_MUTEX_TIMEOUT_MS ))
-	{
-		// No action
-	}
-	else
-	{
-		status = eNVM_ERROR;
-	}
 
 	// USER CODE END...
 
@@ -150,8 +116,6 @@ nvm_status_t nvm_if_release_mutex(void)
 	nvm_status_t status = eNVM_OK;
 
 	// USER CODE BEGIN...
-
-	osMutexRelease( g_nvm_mutex_id );
 
 	// USER CODE END...
 

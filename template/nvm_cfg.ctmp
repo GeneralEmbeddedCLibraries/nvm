@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Ziga Miklosic
+// Copyright (c) 2022 Ziga Miklosic
 // All Rights Reserved
 // This software is under MIT licence (https://opensource.org/licenses/MIT)
 ////////////////////////////////////////////////////////////////////////////////
@@ -6,8 +6,8 @@
 *@file      nvm_cfg.c
 *@brief     Non-Volatile memory configuration
 *@author    Ziga Miklosic
-*@date      04.06.2021
-*@version	V1.0.1
+*@date      14.12.2022
+*@version	V2.0.0
 */
 ////////////////////////////////////////////////////////////////////////////////
 /**
@@ -29,19 +29,7 @@
 
 // USER CODE BEGIN...
 
-#include "assert.h"
-#include "drivers/devices/25lcxxxx/25lcxxxx/src/25lcxxxx.h"
-
-
-/**
- * 	Check 25lcxxxx driver compatibility
- *
- * 	Driver version support: V1.0.1 or higher
- */
-static_assert( 1 ==_25LCXXXX_VER_MAJOR );
-static_assert( 0 ==_25LCXXXX_VER_MINOR );
-static_assert( 1 <=_25LCXXXX_VER_DEVELOP );
-
+#include "drivers/devices/_24AA64T/_24aa64t.h"
 
 // USER CODE END...
 
@@ -74,11 +62,13 @@ static const nvm_mem_driver_t g_mem_driver[ eNVM_MEM_DRV_NUM_OF ]=
 	// USER CODE BEGIN...
 
 	// EEPROM LOW LEVEL MEMORY DRIVERS
-	[eNVM_MEM_DRV_EEPROM] = {	(nvm_status_t (*)(void))																	_25lcxxxx_init,
-								(nvm_status_t (*)(const uint32_t addr, const uint32_t size, const uint8_t * const p_data)) 	_25lcxxxx_write,
-								(nvm_status_t (*)(const uint32_t addr, const uint32_t size, uint8_t * const p_data))		_25lcxxxx_read,
-								(nvm_status_t (*)(const uint32_t addr, const uint32_t size))								_25lcxxxx_erase,
-							},
+	[eNVM_MEM_DRV_EEPROM ] = 
+	{
+		(nvm_status_t (*)(void))																	_24aa64t_init,
+		(nvm_status_t (*)(const uint32_t addr, const uint32_t size, const uint8_t * const p_data)) 	_24aa64t_write,
+		(nvm_status_t (*)(const uint32_t addr, const uint32_t size, uint8_t * const p_data))		_24aa64t_read,
+		(nvm_status_t (*)(const uint32_t addr, const uint32_t size))								_24aa64t_erase,
+	},
 
 	// User shall add more here if needed...
 
@@ -98,13 +88,14 @@ static const nvm_region_t g_nvm_region[ eNVM_REGION_NUM_OF ] =
 {
 	// USER CODE BEGIN...
 
-	// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	// 									Region Name						Start address			Size [byte]			Low level driver
-	// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	// --------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	//											Region Name						Start address			Size [byte]			Low level driver
+	// --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-	[eNVM_REGION_EEPROM_RUN_PAR] = {	.name = "device parameters",	.start_addr = 0x0,		.size = 1024,		.p_driver = &g_mem_driver[ eNVM_MEM_DRV_EEPROM ] },
+	[eNVM_REGION_EEPROM_DEV_PAR]	=	{	.name = "device parameters",	.start_addr = 0x0,		.size = 1024,		.p_driver = &g_mem_driver[ eNVM_MEM_DRV_EEPROM ]	},
+	[eNVM_REGION_EEPROM_CLI]		=	{	.name = "CLI settings",			.start_addr = 0x400,	.size = 256,		.p_driver = &g_mem_driver[ eNVM_MEM_DRV_EEPROM ]	},
 
-	// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	// --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	// User shall add more here if needed...
 

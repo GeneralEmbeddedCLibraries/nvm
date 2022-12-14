@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Ziga Miklosic
+// Copyright (c) 2022 Ziga Miklosic
 // All Rights Reserved
 // This software is under MIT licence (https://opensource.org/licenses/MIT)
 ////////////////////////////////////////////////////////////////////////////////
@@ -6,8 +6,8 @@
 *@file      nvm.c
 *@brief     Non-Volatile memory
 *@author    Ziga Miklosic
-*@date      04.06.2021
-*@version	V1.0.1
+*@date      14.12.2022
+*@version	V2.0.0
 */
 ////////////////////////////////////////////////////////////////////////////////
 /**
