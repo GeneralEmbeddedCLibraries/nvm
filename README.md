@@ -29,8 +29,8 @@ typedef enum
 {
 	eMEM_DRV_OK         = 0,		/**<Normal operation status code */
 	eMEM_DRV_ERROR_1    = 0x01,		/**<Error 1 status code */
-	eMEM_DRV_ERROR_2    = 0x01,		/**<Error 1 status code */
-	eMEM_DRV_ERROR_3    = 0x01,		/**<Error 1 status code */
+	eMEM_DRV_ERROR_2    = 0x01,		/**<Error 2 status code */
+	eMEM_DRV_ERROR_3    = 0x01,		/**<Error 3 status code */
 
 	// ...
 } mem_status_t;
@@ -64,7 +64,7 @@ root/middleware/nvm/nvm/"module_space"
 | **nvm_init** | Initialization of NVM module | nvm_status_t nvm_init(void) |
 | **nvm_deinit** | De-initialization of NVM module | nvm_status_t nvm_deinit(void) |
 | **nvm_is_init** | Get NVM module initialization flag | nvm_status_t nvm_is_init(bool * const p_is_init) |
-| **nvm_write** | Write data to NVM region | (const nvm_region_name_t region, const uint32_t addr, const uint32_t size, const uint8_t * const p_data) |
+| **nvm_write** | Write data to NVM region | nvm_status_t nvm_write(const nvm_region_name_t region, const uint32_t addr, const uint32_t size, const uint8_t * const p_data) |
 | **nvm_read** | Read data from NVM region | nvm_status_t nvm_read(const nvm_region_name_t region, const uint32_t addr, const uint32_t size, uint8_t * const p_data) |
 | **nvm_erase** | Erase data from NVM region | nvm_status_t nvm_erase(const nvm_region_name_t region, const uint32_t addr, const uint32_t size) |
 
@@ -123,7 +123,7 @@ typedef enum
 } nvm_mem_drv_name_t;
 ```
 
-4. Connect Memory device low level driver with NVM module
+4. Connect memory device low level driver with NVM module
 
 ```C
 /**
@@ -197,7 +197,8 @@ static const nvm_region_t g_nvm_region[ eNVM_REGION_NUM_OF ] =
 ```C
 if ( eNVM_OK != nvm_init())
 {
-    PROJECT_CONFIG_ASSERT( 0 );
+    // Error during initialization!
+	// Furhter action here...
 }
 ```
 
@@ -208,7 +209,7 @@ if ( eNVM_OK != nvm_init())
 // Write example
 if ( eNVM_OK != nvm_write( eNVM_REGION_EEPROM_RUN_PAR, 0x100, 10U, (const uint8_t*) &u8_write_data))
 {
-    // NVM write error...
+    // NVM write error!
     // Further actions here...
 }
 
@@ -218,11 +219,12 @@ uint32_t     sign	= 0UL;
 
 if ( eNVM_OK != nvm_read( eNVM_REGION_EEPROM_RUN_PAR, PAR_NVM_SIGNATURE_ADDR_OFFSET, 4U, (uint8_t*) &sign ))
 {
-    // NVM read error...
+    // NVM read error!
     // Further actions here...
 }
 
 // Erase example
+// Erase 4 bytes starting from address 0x123 inside RUN_PAR region
 nvm_erase( eNVM_REGION_EEPROM_RUN_PAR, 0x123, 4U );
 
 ```
