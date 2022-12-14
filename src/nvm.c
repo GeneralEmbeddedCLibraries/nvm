@@ -67,8 +67,7 @@ static const nvm_region_t * gp_nvm_regions = NULL;
 ////////////////////////////////////////////////////////////////////////////////
 nvm_status_t nvm_init(void)
 {
-	nvm_status_t 	status 		= eNVM_OK;
-	uint8_t			mem_drv_num	= 0U;
+	nvm_status_t status = eNVM_OK;
 
 	if ( false == gb_is_init )
 	{
@@ -77,7 +76,7 @@ nvm_status_t nvm_init(void)
 		NVM_ASSERT( NULL != gp_nvm_regions );
 
 		// Low level driver init
-		for ( mem_drv_num = 0; mem_drv_num < eNVM_MEM_DRV_NUM_OF; mem_drv_num++ )
+		for ( uint32_t mem_drv_num = 0; mem_drv_num < eNVM_MEM_DRV_NUM_OF; mem_drv_num++ )
 		{
 			if ( NULL != gp_nvm_regions[mem_drv_num].p_driver->pf_nvm_init )
 			{
@@ -116,11 +115,32 @@ nvm_status_t nvm_deinit(void)
 {
     nvm_status_t status = eNVM_OK;
     
-    // TODO: 
+    if ( true == gb_is_init )
+    {
+        // Low level driver de-init
+        for ( uint32_t mem_drv_num = 0; mem_drv_num < eNVM_MEM_DRV_NUM_OF; mem_drv_num++ )
+        {
+            if ( NULL != gp_nvm_regions[mem_drv_num].p_driver->pf_nvm_deinit )
+            {
+                status |= gp_nvm_regions[mem_drv_num].p_driver->pf_nvm_deinit();
+
+                NVM_DBG_PRINT( "NVM: Low level memory driver #%d de-initialize with status: %s", mem_drv_num, nvm_get_status_str( status ));
+            }
+        } 
+
+        // De-init success
+        if ( eNVM_OK == status )
+        {
+            gb_is_init = false;
+        }
+    }
+    else
+    {
+        status = eNVM_ERROR;
+    }
 
     return status;
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 /**
