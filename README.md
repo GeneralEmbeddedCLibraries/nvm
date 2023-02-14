@@ -107,7 +107,7 @@ Mapping of Flash NVM regions to RAM is shown in picture below. Note that user de
 
 #### **4. Write & Sync to EEPROM Emulated flash memory**
 
-![](doc/pic/nvm_ee_write_sync.png)
+![](doc/pic/nvm_ee_write.png)
 
 
 ### Limitation
