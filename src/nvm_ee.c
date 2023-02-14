@@ -64,6 +64,14 @@ static nvm_status_t nvm_ee_copy_flash_to_ram    (void);
 ////////////////////////////////////////////////////////////////////////////////
 
 
+////////////////////////////////////////////////////////////////////////////////
+/**
+*		Copy data from RAM -> FLASH
+*
+*
+* @return 		status	- Status of operation
+*/
+////////////////////////////////////////////////////////////////////////////////
 static nvm_status_t nvm_ee_copy_ram_to_flash(void)
 {
     nvm_status_t    status      = eNVM_OK;
@@ -193,19 +201,10 @@ nvm_status_t nvm_ee_write(const nvm_region_name_t region, const uint32_t addr, c
     if ( true == gb_is_init )
     {
         // Calculate RAM offset
-        const uint32_t ram_offset = (uint32_t)( addr - gp_nvm_regions[region].start_addr );
+        const uint32_t ram_offset = (uint32_t)( addr );
 
         // First copy data to RAM space
         memcpy( &gp_ram_mem[ram_offset], p_data, size );
-
-        // Erase flash page
-        if ( eNVM_OK != gp_nvm_regions[region].p_driver->pf_nvm_erase( gp_nvm_regions[region].start_addr, size ))
-        {
-            status = eNVM_ERROR;
-        }
-
-        // Copy from RAM to Flash
-        status |= nvm_ee_copy_ram_to_flash();
     }
     else
     {
@@ -225,7 +224,7 @@ nvm_status_t nvm_ee_read(const nvm_region_name_t region, const uint32_t addr, co
     if ( true == gb_is_init )
     {
         // Calculate RAM offset
-        const uint32_t ram_offset = (uint32_t)( addr - gp_nvm_regions[region].start_addr );
+        const uint32_t ram_offset = (uint32_t)( addr );
 
         // Read only from local RAM
         memcpy( p_data, &gp_ram_mem[ram_offset], size );
@@ -247,14 +246,11 @@ nvm_status_t nvm_ee_erase(const nvm_region_name_t region, const uint32_t addr, c
 
     if ( true == gb_is_init )
     {
-        // Erase flash page
-        if ( eNVM_OK != gp_nvm_regions[region].p_driver->pf_nvm_erase( addr, size ))
-        {
-            status = eNVM_ERROR;
-        }
+        // Calculate RAM offset
+        const uint32_t ram_offset = (uint32_t)( addr );
 
-        // Copy all content from Flash to RAM
-        status = nvm_ee_copy_flash_to_ram();
+        // Erase only local RAM
+        memset(  &gp_ram_mem[ram_offset], 0xFFU, size );
     }
     else
     {
@@ -264,6 +260,31 @@ nvm_status_t nvm_ee_erase(const nvm_region_name_t region, const uint32_t addr, c
     return status;
 }
 
+
+nvm_status_t nvm_ee_sync(void)
+{
+    nvm_status_t status = eNVM_OK;
+
+    NVM_ASSERT( true == gb_is_init );
+
+    if ( true == gb_is_init )
+    {
+        // Erase flash page
+        if ( eNVM_OK != gp_nvm_regions[region].p_driver->pf_nvm_erase( addr, size ))
+        {
+            status = eNVM_ERROR;
+        }
+
+        // Copy content from RAM -> FLASH
+        status = nvm_ee_copy_ram_to_flash();
+    }
+    else
+    {
+        status = eNVM_ERROR;
+    }
+
+    return status;
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
