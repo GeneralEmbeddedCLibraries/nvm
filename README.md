@@ -93,9 +93,6 @@ Mapping of Flash NVM regions to RAM is shown in picture below. Note that user de
 
 
 
-
-
-
 ## **API**
 | API Functions | Description | Prototype |
 | --- | ----------- | ----- |
