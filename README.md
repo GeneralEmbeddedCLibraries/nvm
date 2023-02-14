@@ -95,17 +95,19 @@ Mapping of Flash NVM regions to RAM is shown in picture below. Note that user de
 
 #### **1. Initialization of EEPROM Emulated flash memory**
 
-![](doc/nvm_ee_init.png)
+![](doc/pic/nvm_ee_init.png)
 
 #### **2. Read from EEPROM Emulated flash memory**
 
-![](doc/nvm_ee_read.png)
+![](doc/pic/nvm_ee_read.png)
 
 #### **3. Erase EEPROM Emulated flash memory**
 
+![](doc/pic/nvm_ee_erase.png)
 
 #### **4. Write & Sync to EEPROM Emulated flash memory**
 
+![](doc/pic/nvm_ee_write_sync.png)
 
 
 ### Limitation
