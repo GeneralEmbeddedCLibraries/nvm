@@ -72,6 +72,19 @@ In order to be part of *General Embedded C Libraries Ecosystem* this module must
 root/middleware/nvm/nvm/"module_space"
 ```
 
+## **EEPROM Emulation**
+NVM modules has integrated EEPROM emulation techniques for interfacing with Flash based memory devices as with EEPROM device. In other words EEPROM emulation is responsible for making abstration of Flash memory device, thus NVM modules "thinks" it works with EEPROM device.  EEPROM emulation is a sub-module integrated within NVM module. Picture below shows place of EEPROM emulation within NVM module:
+
+![](doc/nvm_eeprom_emulation.png)
+
+On the surface, the main difference between Flash memory and EEPROM memory is the size of an individually-
+modifiable  area.  On  most  EEPROM  devices,  memory  can  be  modified  one  byte  at  a  time.  However,  on  flash
+devices, memory is typically organized into “pages” consisting of a larger number of bytes. These pages must be
+erased (writing 1s to all bits) one full page at a time, while individual bits can be written to zero. To emulate byte-
+writeable EEPROM memory in a Flash device, it is necessary to perform a **read-modify-write operation**. (Source: Silicon Labs AppNote [AN568](https://www.silabs.com/documents/public/application-notes/AN568.pdf))
+
+
+
 ## **API**
 | API Functions | Description | Prototype |
 | --- | ----------- | ----- |
@@ -242,4 +255,9 @@ if ( eNVM_OK != nvm_read( eNVM_REGION_EEPROM_RUN_PAR, PAR_NVM_SIGNATURE_ADDR_OFF
 nvm_erase( eNVM_REGION_EEPROM_RUN_PAR, 0x123, 4U );
 
 ```
+
+
+### Usage with EEPROM emulation
+
+TODO: ...
 
