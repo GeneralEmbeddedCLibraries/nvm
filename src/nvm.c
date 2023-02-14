@@ -46,9 +46,10 @@
 static bool gb_is_init = false;
 
 /**
- * 	Pointer to NVM
+ * 	Pointer to NVM configuration tables
  */
-static const nvm_region_t * gp_nvm_regions = NULL;
+static const nvm_region_t *     gp_nvm_regions = NULL;
+static const nvm_mem_driver_t * gp_nvm_drivers = NULL;
 
 #if ( NVM_CFG_DEBUG_EN )
 
@@ -81,7 +82,9 @@ nvm_status_t nvm_init(void)
 	{
 		// Get table configuration
 		gp_nvm_regions = nvm_cfg_get_regions();
+		gp_nvm_drivers = nvm_cfg_get_drivers();
 		NVM_ASSERT( NULL != gp_nvm_regions );
+		NVM_ASSERT( NULL != gp_nvm_drivers );
 
         // TODO: Add configuration checker!!!
 
@@ -89,20 +92,18 @@ nvm_status_t nvm_init(void)
 		for ( uint32_t mem_drv_num = 0; mem_drv_num < eNVM_MEM_DRV_NUM_OF; mem_drv_num++ )
 		{
             // TODO: Omit NULL Check adter configuration checker is implemented!!!
-			if ( NULL != gp_nvm_regions[mem_drv_num].p_driver->pf_nvm_init )
+			if ( NULL != gp_nvm_drivers[mem_drv_num].pf_nvm_init )
 			{
-				status |= gp_nvm_regions[mem_drv_num].p_driver->pf_nvm_init();
+                // Init low level memory driver
+				status |= gp_nvm_drivers[mem_drv_num].pf_nvm_init();
 
 				NVM_DBG_PRINT( "NVM: Low level memory driver #%d initialize with status: %s", mem_drv_num, nvm_get_status_str( status ));
 			}
-            
-            // EEPROM Emulation
-            if ( true == gp_nvm_regions[mem_drv_num].p_driver->ee.en )
-            {
-                
-            }
 
 		}
+
+        // Init NVM EEPROM Emulation
+        status |= nvm_ee_init();
 
 		// Init NVM interface
 		status |= nvm_if_init();
@@ -222,11 +223,21 @@ nvm_status_t nvm_write(const nvm_region_name_t region, const uint32_t addr, cons
 				if ( eNVM_OK == nvm_if_aquire_mutex())
 				{
 			#endif
-					// Write
-					if ( eNVM_OK != gp_nvm_regions[region].p_driver->pf_nvm_write( gp_nvm_regions[region].start_addr + addr, size, p_data ))
-					{
-						status = eNVM_ERROR;
-					}
+                    // EEPROM emulated region
+                    if ( true == gp_nvm_regions[region].p_driver->ee.en )
+                    {
+                        status = nvm_ee_write( region, gp_nvm_regions[region].start_addr + addr, size, p_data );
+                    }
+
+                    // Simple write
+                    else
+                    {
+    					// Write
+    					if ( eNVM_OK != gp_nvm_regions[region].p_driver->pf_nvm_write( gp_nvm_regions[region].start_addr + addr, size, p_data ))
+    					{
+    						status = eNVM_ERROR;
+    					}
+                    }
 
 			#if ( 1 == NVM_CFG_MUTEX_EN )
 					nvm_if_release_mutex();
@@ -292,11 +303,21 @@ nvm_status_t nvm_read(const nvm_region_name_t region, const uint32_t addr, const
 				if ( eNVM_OK == nvm_if_aquire_mutex())
 				{
 			#endif
-					// Read
-					if ( eNVM_OK != gp_nvm_regions[region].p_driver->pf_nvm_read( gp_nvm_regions[region].start_addr + addr, size, p_data ))
-					{
-						status = eNVM_ERROR;
-					}
+                    // EEPROM emulated region
+                    if ( true == gp_nvm_regions[region].p_driver->ee.en )
+                    {
+                        status = nvm_ee_read( region, gp_nvm_regions[region].start_addr + addr, size, p_data );
+                    }
+
+                    // Simple read
+                    else
+                    {
+    					// Read
+    					if ( eNVM_OK != gp_nvm_regions[region].p_driver->pf_nvm_read( gp_nvm_regions[region].start_addr + addr, size, p_data ))
+    					{
+    						status = eNVM_ERROR;
+    					}
+                    }
 
 			#if ( 1 == NVM_CFG_MUTEX_EN )
 					nvm_if_release_mutex();
@@ -361,11 +382,22 @@ nvm_status_t nvm_erase(const nvm_region_name_t region, const uint32_t addr, cons
 				if ( eNVM_OK == nvm_if_aquire_mutex())
 				{
 			#endif
-					// Erase
-					if ( eNVM_OK != gp_nvm_regions[region].p_driver->pf_nvm_erase( gp_nvm_regions[region].start_addr + addr, size ))
-					{
-						status = eNVM_ERROR;
-					}
+					
+                    // EEPROM emulated region
+                    if ( true == gp_nvm_regions[region].p_driver->ee.en )
+                    {
+                        status = nvm_ee_erase( region, gp_nvm_regions[region].start_addr + addr, size );
+                    }
+
+                    // Simple erase
+                    else
+                    {
+                        // Erase
+    					if ( eNVM_OK != gp_nvm_regions[region].p_driver->pf_nvm_erase( gp_nvm_regions[region].start_addr + addr, size ))
+    					{
+    						status = eNVM_ERROR;
+    					}
+                    }
 
 			#if ( 1 == NVM_CFG_MUTEX_EN )
 					nvm_if_release_mutex();
