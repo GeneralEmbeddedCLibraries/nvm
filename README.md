@@ -77,11 +77,22 @@ NVM modules has integrated EEPROM emulation techniques for interfacing with Flas
 
 ![](doc/nvm_eeprom_emulation.png)
 
+### Problem
 On the surface, the main difference between Flash memory and EEPROM memory is the size of an individually-
 modifiable  area.  On  most  EEPROM  devices,  memory  can  be  modified  one  byte  at  a  time.  However,  on  flash
 devices, memory is typically organized into “pages” consisting of a larger number of bytes. These pages must be
 erased (writing 1s to all bits) one full page at a time, while individual bits can be written to zero. To emulate byte-
 writeable EEPROM memory in a Flash device, it is necessary to perform a **read-modify-write operation**. (Source: Silicon Labs AppNote [AN568](https://www.silabs.com/documents/public/application-notes/AN568.pdf))
+
+### Solution
+In order to make an abstration of EEPROM for flash based device, RAM memory will be used as inter-mediate medium of informations. Therefore each informations inside NVM region that will use driver with EEPROM emulation enabled will be copied to RAM, modified in RAM and then copied back to Flash.
+
+Mapping of Flash NVM regions to RAM is shown in picture below. Note that user defined NVM regions might not be consecutive, therefore there is space in flash between two represented regions. But there is no space in RAM space, as it serves only for inter-mediate memory.
+
+![](doc/nvm_ee_mapping.png)
+
+
+
 
 
 

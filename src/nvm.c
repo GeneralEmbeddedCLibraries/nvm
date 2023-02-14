@@ -21,8 +21,16 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Includes
 ////////////////////////////////////////////////////////////////////////////////
+#include <stdlib.h>
+#include <stdint.h>
+#include <stdbool.h>
+
 #include "nvm.h"
+#include "nvm_ee.h"
+
+// Interface
 #include "../../nvm_if.h"
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Definitions
@@ -75,15 +83,25 @@ nvm_status_t nvm_init(void)
 		gp_nvm_regions = nvm_cfg_get_regions();
 		NVM_ASSERT( NULL != gp_nvm_regions );
 
+        // TODO: Add configuration checker!!!
+
 		// Low level driver init
 		for ( uint32_t mem_drv_num = 0; mem_drv_num < eNVM_MEM_DRV_NUM_OF; mem_drv_num++ )
 		{
+            // TODO: Omit NULL Check adter configuration checker is implemented!!!
 			if ( NULL != gp_nvm_regions[mem_drv_num].p_driver->pf_nvm_init )
 			{
 				status |= gp_nvm_regions[mem_drv_num].p_driver->pf_nvm_init();
 
 				NVM_DBG_PRINT( "NVM: Low level memory driver #%d initialize with status: %s", mem_drv_num, nvm_get_status_str( status ));
 			}
+            
+            // EEPROM Emulation
+            if ( true == gp_nvm_regions[mem_drv_num].p_driver->ee.en )
+            {
+                
+            }
+
 		}
 
 		// Init NVM interface
@@ -375,7 +393,7 @@ nvm_status_t nvm_erase(const nvm_region_name_t region, const uint32_t addr, cons
 	return status;
 }
 
-#if ( NVM_CFG_DEBUG_EN )
+#if ( 1 == NVM_CFG_DEBUG_EN )
 
 	////////////////////////////////////////////////////////////////////////////////
 	/**

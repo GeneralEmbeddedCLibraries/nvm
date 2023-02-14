@@ -22,6 +22,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Includes
 ////////////////////////////////////////////////////////////////////////////////
+#include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -48,6 +49,15 @@ typedef enum
 } nvm_status_t;
 
 /**
+ *  EEPROM Emulation
+ */
+typedef struct
+{
+    uint32_t    page_size;  /**<Page size of FLASH memory device */
+    bool        en;         /**<Enable EEPROM emulation */
+} nvm_ee_t;
+
+/**
  * 	Memory device driver
  */
 typedef struct nvm_mem_driver_s
@@ -57,6 +67,8 @@ typedef struct nvm_mem_driver_s
 	nvm_status_t (*pf_nvm_write)	(const uint32_t addr, const uint32_t size, const uint8_t * const p_data);
 	nvm_status_t (*pf_nvm_read)		(const uint32_t addr, const uint32_t size, uint8_t * const p_data);
 	nvm_status_t (*pf_nvm_erase)	(const uint32_t addr, const uint32_t size);
+
+    nvm_ee_t    ee;     /**<EEPROM emulation */
 } nvm_mem_driver_t;
 
 /**
