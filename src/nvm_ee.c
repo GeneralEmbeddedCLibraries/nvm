@@ -63,11 +63,9 @@ static nvm_status_t nvm_ee_copy_flash_to_ram    (void);
 // Functions
 ////////////////////////////////////////////////////////////////////////////////
 
-
 ////////////////////////////////////////////////////////////////////////////////
 /**
 *		Copy data from RAM -> FLASH
-*
 *
 * @return 		status	- Status of operation
 */
@@ -97,8 +95,13 @@ static nvm_status_t nvm_ee_copy_ram_to_flash(void)
     return status;
 }
 
-
-
+////////////////////////////////////////////////////////////////////////////////
+/**
+*		Copy data from FLASH -> RAM
+*
+* @return 		status	- Status of operation
+*/
+////////////////////////////////////////////////////////////////////////////////
 static nvm_status_t nvm_ee_copy_flash_to_ram(void)
 {
     nvm_status_t    status      = eNVM_OK;
@@ -123,9 +126,6 @@ static nvm_status_t nvm_ee_copy_flash_to_ram(void)
 
     return status;
 }
-
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 /**
@@ -260,27 +260,31 @@ nvm_status_t nvm_ee_erase(const nvm_region_name_t region, const uint32_t addr, c
     return status;
 }
 
-
-nvm_status_t nvm_ee_sync(void)
+////////////////////////////////////////////////////////////////////////////////
+/**
+*		Copy data from FLASH -> RAM
+*
+* @note     Some upper level module might call that function even if EEPROM
+*           emulated method is not being used! Such approach makes handling
+*           data much easier.
+*
+* @return 		status	- Status of operation
+*/
+////////////////////////////////////////////////////////////////////////////////
+nvm_status_t nvm_ee_sync(const nvm_region_name_t region)
 {
     nvm_status_t status = eNVM_OK;
-
-    NVM_ASSERT( true == gb_is_init );
 
     if ( true == gb_is_init )
     {
         // Erase flash page
-        if ( eNVM_OK != gp_nvm_regions[region].p_driver->pf_nvm_erase( addr, size ))
+        if ( eNVM_OK != gp_nvm_regions[region].p_driver->pf_nvm_erase( gp_nvm_regions[region].start_addr, gp_nvm_regions[region].size ))
         {
             status = eNVM_ERROR;
         }
 
         // Copy content from RAM -> FLASH
         status = nvm_ee_copy_ram_to_flash();
-    }
-    else
-    {
-        status = eNVM_ERROR;
     }
 
     return status;

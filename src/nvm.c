@@ -425,6 +425,49 @@ nvm_status_t nvm_erase(const nvm_region_name_t region, const uint32_t addr, cons
 	return status;
 }
 
+nvm_status_t nvm_sync(const nvm_region_name_t region)
+{
+	nvm_status_t status = eNVM_OK;
+
+	// Is init
+	NVM_ASSERT( true == gb_is_init );
+
+    // Check input
+    NVM_ASSERT( region < eNVM_REGION_NUM_OF );
+
+	// Check init
+	if  (   ( true == gb_is_init )
+        &&  ( region < eNVM_REGION_NUM_OF ))
+	{
+        #if ( 1 == NVM_CFG_MUTEX_EN )
+            if ( eNVM_OK == nvm_if_aquire_mutex())
+            {
+        #endif
+                
+        // Sync local RAM data to FLASH memory
+        status = nvm_ee_sync( region );
+
+        #if ( 1 == NVM_CFG_MUTEX_EN )
+                nvm_if_release_mutex();
+            }
+
+            // Mutex not acquire
+            else
+            {
+                status = eNVM_ERROR;
+            }
+        #endif
+	}
+	else
+	{
+		status = eNVM_ERROR;
+	}
+
+	NVM_DBG_PRINT( "NVM: Sync status: %s", nvm_get_status_str( status ));
+
+	return status;    
+}
+
 #if ( 1 == NVM_CFG_DEBUG_EN )
 
 	////////////////////////////////////////////////////////////////////////////////

@@ -43,7 +43,7 @@ nvm_status_t nvm_ee_init    (void);
 nvm_status_t nvm_ee_write   (const nvm_region_name_t region, const uint32_t addr, const uint32_t size, const uint8_t * const p_data);
 nvm_status_t nvm_ee_read    (const nvm_region_name_t region, const uint32_t addr, const uint32_t size, uint8_t * const p_data);
 nvm_status_t nvm_ee_erase   (const nvm_region_name_t region, const uint32_t addr, const uint32_t size);
-nvm_status_t nvm_ee_sync    (void);
+nvm_status_t nvm_ee_sync    (const nvm_region_name_t region);
 
 #endif // __NVM_EE_H
 
