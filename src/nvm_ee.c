@@ -57,6 +57,7 @@ static uint8_t * gp_ram_mem = NULL;
 ////////////////////////////////////////////////////////////////////////////////
 static nvm_status_t nvm_ee_copy_ram_to_flash    (void);
 static nvm_status_t nvm_ee_copy_flash_to_ram    (void);
+static uint32_t     nvm_ee_calc_ram_offset      (const nvm_region_name_t region, const uint32_t addr);
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -129,6 +130,39 @@ static nvm_status_t nvm_ee_copy_flash_to_ram(void)
 
 ////////////////////////////////////////////////////////////////////////////////
 /**
+*		Find local RAM offset that reflects NVM region
+*
+* @param[in]    region  - NVM region name
+* @param[in]    addr    - Address
+* @return 		status	- Status of operation
+*/
+////////////////////////////////////////////////////////////////////////////////
+static uint32_t nvm_ee_calc_ram_offset(const nvm_region_name_t region, const uint32_t addr)
+{
+    uint32_t ram_offset = addr;
+
+    // Go thru all regions
+    for (uint32_t reg_name = 0U; reg_name < eNVM_REGION_NUM_OF; reg_name++)
+    {
+        // Ignore first region
+        if ( reg_name > 0U )
+        {
+            // Offset RAM for previous region size
+            ram_offset += gp_nvm_regions[( region - 1U )].size;
+        }
+
+        // Maching region
+        if ( region == reg_name )
+        {
+            break;
+        }
+    }    
+
+    return ram_offset;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/**
 * @} <!-- END GROUP -->
 */
 ////////////////////////////////////////////////////////////////////////////////
@@ -192,6 +226,7 @@ nvm_status_t nvm_ee_init(void)
 }
 
 
+
 nvm_status_t nvm_ee_write(const nvm_region_name_t region, const uint32_t addr, const uint32_t size, const uint8_t * const p_data)
 {
     nvm_status_t status = eNVM_OK;
@@ -201,7 +236,7 @@ nvm_status_t nvm_ee_write(const nvm_region_name_t region, const uint32_t addr, c
     if ( true == gb_is_init )
     {
         // Calculate RAM offset
-        const uint32_t ram_offset = (uint32_t)( addr );
+        const uint32_t ram_offset = nvm_ee_calc_ram_offset( region, addr );
 
         // First copy data to RAM space
         memcpy( &gp_ram_mem[ram_offset], p_data, size );
@@ -224,7 +259,7 @@ nvm_status_t nvm_ee_read(const nvm_region_name_t region, const uint32_t addr, co
     if ( true == gb_is_init )
     {
         // Calculate RAM offset
-        const uint32_t ram_offset = (uint32_t)( addr );
+        const uint32_t ram_offset = nvm_ee_calc_ram_offset( region, addr );
 
         // Read only from local RAM
         memcpy( p_data, &gp_ram_mem[ram_offset], size );
@@ -247,7 +282,7 @@ nvm_status_t nvm_ee_erase(const nvm_region_name_t region, const uint32_t addr, c
     if ( true == gb_is_init )
     {
         // Calculate RAM offset
-        const uint32_t ram_offset = (uint32_t)( addr );
+        const uint32_t ram_offset = nvm_ee_calc_ram_offset( region, addr );
 
         // Erase only local RAM
         memset(  &gp_ram_mem[ram_offset], 0xFFU, size );

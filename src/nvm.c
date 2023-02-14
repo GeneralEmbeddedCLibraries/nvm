@@ -260,7 +260,7 @@ nvm_status_t nvm_write(const nvm_region_name_t region, const uint32_t addr, cons
 		status = eNVM_ERROR;
 	}
 
-	NVM_DBG_PRINT( "NVM: Writing to addr: 0x%04X. Status: %s", addr, nvm_get_status_str( status ));
+	NVM_DBG_PRINT( "NVM: Writing to region <%d> addr: 0x%04X. Status: %s", region, addr, nvm_get_status_str( status ));
 
 	return status;
 }
@@ -340,7 +340,7 @@ nvm_status_t nvm_read(const nvm_region_name_t region, const uint32_t addr, const
 		status = eNVM_ERROR;
 	}
 
-	NVM_DBG_PRINT( "NVM: Reading from addr: 0x%04X. Status: %s", addr, nvm_get_status_str( status ));
+	NVM_DBG_PRINT( "NVM: Reading region <%d> from addr: 0x%04X. Status: %s", region, addr, nvm_get_status_str( status ));
 
 	return status;
 }
@@ -420,7 +420,7 @@ nvm_status_t nvm_erase(const nvm_region_name_t region, const uint32_t addr, cons
 		status = eNVM_ERROR;
 	}
 
-	NVM_DBG_PRINT( "NVM: Erasing from addr: 0x%04X. Status: %s", addr, nvm_get_status_str( status ));
+	NVM_DBG_PRINT( "NVM: Erasing from region <%d> addr: 0x%04X. Status: %s", region, addr, nvm_get_status_str( status ));
 
 	return status;
 }
@@ -463,7 +463,7 @@ nvm_status_t nvm_sync(const nvm_region_name_t region)
 		status = eNVM_ERROR;
 	}
 
-	NVM_DBG_PRINT( "NVM: Sync status: %s", nvm_get_status_str( status ));
+	NVM_DBG_PRINT( "NVM: Sync region <%d> status: %s", region, nvm_get_status_str( status ));
 
 	return status;    
 }
