@@ -6,8 +6,8 @@
 *@file      nvm.h
 *@brief     Non-Volatile memory
 *@author    Ziga Miklosic
-*@date      14.12.2022
-*@version	V2.0.0
+*@date      15.02.2023
+*@version	V2.1.0
 */
 ////////////////////////////////////////////////////////////////////////////////
 /**

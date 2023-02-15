@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Ziga Miklosic
+// Copyright (c) 2023 Ziga Miklosic
 // All Rights Reserved
 // This software is under MIT licence (https://opensource.org/licenses/MIT)
 ////////////////////////////////////////////////////////////////////////////////
@@ -6,8 +6,8 @@
 *@file      nvm_cfg.h
 *@brief     Non-Volatile memory configuration file
 *@author    Ziga Miklosic
-*@date      14.12.2022
-*@version	V2.0.0
+*@date      15.02.2023
+*@version	V2.1.0
 */
 ////////////////////////////////////////////////////////////////////////////////
 /**
@@ -48,8 +48,8 @@ typedef enum
 {
 	// USER CODE BEGIN...
 
-	eNVM_REGION_EEPROM_DEV_PAR = 0,		/**<Device parameters region */
-	eNVM_REGION_EEPROM_CLI,				/**<CLI streaming info region */
+	eNVM_REGION_INT_FLASH_DEV_PAR = 0,		/**<Device parameters region */
+    eNVM_REGION_INT_FLASH_CLI,				/**<CLI streaming info region */
 
 	// USER CODE END...
 
@@ -65,7 +65,7 @@ typedef enum
 {
 	// USER CODE BEGIN...
 
-	eNVM_MEM_DRV_EEPROM = 0,
+	eNVM_MEM_DRV_INT_FLASH = 0,     /**<Internal Nordic flash */      
 
 	// User shall add more here if needed...
 
@@ -90,7 +90,7 @@ typedef enum
 /**
  * 	Enable/Disable assertions
  */
-#define NVM_CFG_ASSERT_EN						( 1 )
+#define NVM_CFG_ASSERT_EN						( 0 )
 
 /**
  * 	Debug communication port macros
@@ -116,6 +116,7 @@ typedef enum
 ////////////////////////////////////////////////////////////////////////////////
 // Functions Prototypes
 ////////////////////////////////////////////////////////////////////////////////
+const void * nvm_cfg_get_drivers(void);
 const void * nvm_cfg_get_regions(void);
 
 #endif // _NVM_CFG_H_
