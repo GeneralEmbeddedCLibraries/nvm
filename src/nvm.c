@@ -203,10 +203,7 @@ nvm_status_t nvm_write(const nvm_region_name_t region, const uint32_t addr, cons
 {
 	nvm_status_t status = eNVM_OK;
 
-	// Is init
 	NVM_ASSERT( true == gb_is_init );
-
-	// Check inputs
 	NVM_ASSERT( region < eNVM_REGION_NUM_OF );
 	NVM_ASSERT(		(( addr + gp_nvm_regions[region].start_addr ) < ( gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size ))
 				&& 	(( addr + gp_nvm_regions[region].start_addr + size ) < ( addr + gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size )));
@@ -283,10 +280,7 @@ nvm_status_t nvm_read(const nvm_region_name_t region, const uint32_t addr, const
 {
 	nvm_status_t status = eNVM_OK;
 
-	// Is init
 	NVM_ASSERT( true == gb_is_init );
-
-	// Check inputs
 	NVM_ASSERT( region < eNVM_REGION_NUM_OF );
 	NVM_ASSERT(		(( addr + gp_nvm_regions[region].start_addr ) < ( gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size ))
 				&& 	(( addr + gp_nvm_regions[region].start_addr + size ) < ( addr + gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size )));
@@ -362,10 +356,7 @@ nvm_status_t nvm_erase(const nvm_region_name_t region, const uint32_t addr, cons
 {
 	nvm_status_t status = eNVM_OK;
 
-	// Is init
 	NVM_ASSERT( true == gb_is_init );
-
-	// Check inputs
 	NVM_ASSERT( region < eNVM_REGION_NUM_OF );
 	NVM_ASSERT(		(( addr + gp_nvm_regions[region].start_addr ) < ( gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size ))
 				&& 	(( addr + gp_nvm_regions[region].start_addr + size ) < ( addr + gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size )));
@@ -429,10 +420,7 @@ nvm_status_t nvm_sync(const nvm_region_name_t region)
 {
 	nvm_status_t status = eNVM_OK;
 
-	// Is init
 	NVM_ASSERT( true == gb_is_init );
-
-    // Check input
     NVM_ASSERT( region < eNVM_REGION_NUM_OF );
 
 	// Check init
