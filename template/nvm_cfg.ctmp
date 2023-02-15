@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Ziga Miklosic
+// Copyright (c) 2023 Ziga Miklosic
 // All Rights Reserved
 // This software is under MIT licence (https://opensource.org/licenses/MIT)
 ////////////////////////////////////////////////////////////////////////////////
@@ -6,8 +6,8 @@
 *@file      nvm_cfg.c
 *@brief     Non-Volatile memory configuration
 *@author    Ziga Miklosic
-*@date      14.12.2022
-*@version	V2.0.0
+*@date      15.02.2023
+*@version	V2.1.0
 */
 ////////////////////////////////////////////////////////////////////////////////
 /**
@@ -29,7 +29,7 @@
 
 // USER CODE BEGIN...
 
-#include "drivers/devices/_24AA64T/_24aa64t.h"
+#include "drivers/peripheral/flash/flash.h"
 
 // USER CODE END...
 
@@ -62,13 +62,17 @@ static const nvm_mem_driver_t g_mem_driver[ eNVM_MEM_DRV_NUM_OF ]=
 	// USER CODE BEGIN...
 
 	// EEPROM LOW LEVEL MEMORY DRIVERS
-	[eNVM_MEM_DRV_EEPROM ] = 
+	[eNVM_MEM_DRV_INT_FLASH ] = 
 	{
-		.pf_nvm_init   = (nvm_status_t (*)(void))																	_24aa64t_init,
-		.pf_nvm_deinit = (nvm_status_t (*)(void))																	_24aa64t_deinit,
-		.pf_nvm_write  = (nvm_status_t (*)(const uint32_t addr, const uint32_t size, const uint8_t * const p_data)) _24aa64t_write,
-		.pf_nvm_read   = (nvm_status_t (*)(const uint32_t addr, const uint32_t size, uint8_t * const p_data))		_24aa64t_read,
-		.pf_nvm_erase  = (nvm_status_t (*)(const uint32_t addr, const uint32_t size))								_24aa64t_erase,
+        // Interface
+		.pf_nvm_init   = (nvm_status_t (*)(void))																	flash_init,
+		.pf_nvm_deinit = (nvm_status_t (*)(void))																	flash_deinit,
+		.pf_nvm_write  = (nvm_status_t (*)(const uint32_t addr, const uint32_t size, const uint8_t * const p_data)) flash_write,
+		.pf_nvm_read   = (nvm_status_t (*)(const uint32_t addr, const uint32_t size, uint8_t * const p_data))		flash_read,
+		.pf_nvm_erase  = (nvm_status_t (*)(const uint32_t addr, const uint32_t size))								flash_erase,
+
+        // Enable EEPROM emulation
+        .ee_en = true,
 	},
 
 	// User shall add more here if needed...
@@ -89,14 +93,14 @@ static const nvm_region_t g_nvm_region[ eNVM_REGION_NUM_OF ] =
 {
 	// USER CODE BEGIN...
 
-	// --------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	//											Region Name						Start address			Size [byte]			Low level driver
-	// --------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	//											Region Name                 Start address                           Size [byte]			Low level driver
+	// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-	[eNVM_REGION_EEPROM_DEV_PAR]	=	{	.name = "device parameters",	.start_addr = 0x0,		.size = 1024,		.p_driver = &g_mem_driver[ eNVM_MEM_DRV_EEPROM ]	},
-	[eNVM_REGION_EEPROM_CLI]		=	{	.name = "CLI settings",			.start_addr = 0x400,	.size = 256,		.p_driver = &g_mem_driver[ eNVM_MEM_DRV_EEPROM ]	},
+	[eNVM_REGION_INT_FLASH_DEV_PAR]	=	{	.name = "Device Parameters",    .start_addr = ( 0x000F7000U ),           .size = 0x400U,		.p_driver = &g_mem_driver[ eNVM_MEM_DRV_INT_FLASH ]	},
+	[eNVM_REGION_INT_FLASH_CLI]		=	{	.name = "CLI settings",			.start_addr = ( 0x000F7000U + 0x400U ),  .size = 0x100U,		.p_driver = &g_mem_driver[ eNVM_MEM_DRV_INT_FLASH ]	},
 
-	// --------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	// User shall add more here if needed...
 
@@ -109,9 +113,21 @@ static const nvm_region_t g_nvm_region[ eNVM_REGION_NUM_OF ] =
 
 ////////////////////////////////////////////////////////////////////////////////
 /**
+*		Get configuration of NVM memory drivers
+*
+* @return	Pointer to NVM memory drivers configuration table
+*/
+////////////////////////////////////////////////////////////////////////////////
+const void * nvm_cfg_get_drivers(void)
+{
+    return (const nvm_mem_driver_t*) &g_mem_driver;  
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/**
 *		Get configuration of NVM regions
 *
-* @return	Pointer to NVM configuration table
+* @return	Pointer to NVM memory regions configuration table
 */
 ////////////////////////////////////////////////////////////////////////////////
 const void * nvm_cfg_get_regions(void)

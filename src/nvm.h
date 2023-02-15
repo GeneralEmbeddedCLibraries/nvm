@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Ziga Miklosic
+// Copyright (c) 2023 Ziga Miklosic
 // All Rights Reserved
 // This software is under MIT licence (https://opensource.org/licenses/MIT)
 ////////////////////////////////////////////////////////////////////////////////
@@ -6,8 +6,8 @@
 *@file      nvm.h
 *@brief     Non-Volatile memory
 *@author    Ziga Miklosic
-*@date      14.12.2022
-*@version	V2.0.0
+*@date      15.02.2023
+*@version	V2.1.0
 */
 ////////////////////////////////////////////////////////////////////////////////
 /**
@@ -22,6 +22,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Includes
 ////////////////////////////////////////////////////////////////////////////////
+#include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -35,7 +36,7 @@
  * 	Module version
  */
 #define NVM_VER_MAJOR		( 2 )
-#define NVM_VER_MINOR		( 0 )
+#define NVM_VER_MINOR		( 1 )
 #define NVM_VER_DEVELOP		( 0 )
 
 /**
@@ -52,11 +53,12 @@ typedef enum
  */
 typedef struct nvm_mem_driver_s
 {
-	nvm_status_t (*pf_nvm_init)		(void);
-	nvm_status_t (*pf_nvm_deinit)	(void);
-	nvm_status_t (*pf_nvm_write)	(const uint32_t addr, const uint32_t size, const uint8_t * const p_data);
-	nvm_status_t (*pf_nvm_read)		(const uint32_t addr, const uint32_t size, uint8_t * const p_data);
-	nvm_status_t (*pf_nvm_erase)	(const uint32_t addr, const uint32_t size);
+	nvm_status_t (*pf_nvm_init)		(void);                                                                     /**<Initialize low level interface pointer function */
+	nvm_status_t (*pf_nvm_deinit)	(void);                                                                     /**<De-initialize low level interface pointer function */
+	nvm_status_t (*pf_nvm_write)	(const uint32_t addr, const uint32_t size, const uint8_t * const p_data);   /**<Write low level interface pointer function */
+	nvm_status_t (*pf_nvm_read)		(const uint32_t addr, const uint32_t size, uint8_t * const p_data);         /**<Read low level interface pointer function */
+	nvm_status_t (*pf_nvm_erase)	(const uint32_t addr, const uint32_t size);                                 /**<Erase low level interface pointer function */
+    bool ee_en;                                                                                                 /**<Enable/Disable EEPROM emulation switch */
 } nvm_mem_driver_t;
 
 /**
@@ -79,6 +81,7 @@ nvm_status_t    nvm_is_init	(bool * const p_is_init);
 nvm_status_t 	nvm_write	(const nvm_region_name_t region, const uint32_t addr, const uint32_t size, const uint8_t * const p_data);
 nvm_status_t 	nvm_read	(const nvm_region_name_t region, const uint32_t addr, const uint32_t size, uint8_t * const p_data);
 nvm_status_t 	nvm_erase	(const nvm_region_name_t region, const uint32_t addr, const uint32_t size);
+nvm_status_t    nvm_sync    (const nvm_region_name_t region);
 
 #if ( NVM_CFG_DEBUG_EN )
 	const char * nvm_get_status_str		(const nvm_status_t status);
