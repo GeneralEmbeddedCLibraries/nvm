@@ -36,7 +36,7 @@
  * 	Module version
  */
 #define NVM_VER_MAJOR		( 2 )
-#define NVM_VER_MINOR		( 0 )
+#define NVM_VER_MINOR		( 1 )
 #define NVM_VER_DEVELOP		( 0 )
 
 /**
