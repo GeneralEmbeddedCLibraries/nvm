@@ -127,11 +127,11 @@ On MCU with flash page of size 4096kB (0x1000) we want to use two regions, first
 
 CORRECT NVM CONFIGURATION:
 ```C
-	// Calibration data in size of 2kB can be fitted into FLASH PAGE START AT: 0x000F6000 (FLASH PAGE #246)
-	[eNVM_REGION_INT_FLASH_LOG] = { .name = "Calibration Data", .start_addr = 0x000F6000U, .size = ( 2U * 1024U ), .p_driver = &g_mem_driver[ eNVM_MEM_DRV_INT_FLASH ]	},
+// Calibration data in size of 2kB can be fitted into FLASH PAGE START AT: 0x000F6000 (FLASH PAGE #246)
+[eNVM_REGION_INT_FLASH_LOG] = { .name = "Calibration Data", .start_addr = 0x000F6000U, .size = ( 2U * 1024U ), .p_driver = &g_mem_driver[ eNVM_MEM_DRV_INT_FLASH ]	},
 
-	// Placing "Diagnostics Log" region to next FLASH PAGE at 0x000F7000 (FLASH PAGE #247). Therefore this region will not be in the middle of page boudary!!!
-	[eNVM_REGION_INT_FLASH_CAL] = { .name = "Diagnostics Log",  .start_addr = 0x000F7000U, .size = ( 3U * 1024U ), .p_driver = &g_mem_driver[ eNVM_MEM_DRV_INT_FLASH ]	},
+// Placing "Diagnostics Log" region to next FLASH PAGE at 0x000F7000 (FLASH PAGE #247). Therefore this region will not be in the middle of page boudary!!!
+[eNVM_REGION_INT_FLASH_CAL] = { .name = "Diagnostics Log",  .start_addr = 0x000F7000U, .size = ( 3U * 1024U ), .p_driver = &g_mem_driver[ eNVM_MEM_DRV_INT_FLASH ]	},
 ```
 
 ## **API**
@@ -236,7 +236,7 @@ static const nvm_mem_driver_t g_mem_driver[ eNVM_MEM_DRV_NUM_OF ]=
 		.pf_nvm_read   = (nvm_status_t (*)(const uint32_t addr, const uint32_t size, uint8_t * const p_data))       _24aa64t_read,
 		.pf_nvm_erase  = (nvm_status_t (*)(const uint32_t addr, const uint32_t size))                               _24aa64t_erase,
 
-		// Disable EEPROM emulation as device is EEPROM based
+        // Disable EEPROM emulation as device is EEPROM based
         .ee_en = false,
 	},
 
@@ -249,7 +249,7 @@ static const nvm_mem_driver_t g_mem_driver[ eNVM_MEM_DRV_NUM_OF ]=
 		.pf_nvm_read   = (nvm_status_t (*)(const uint32_t addr, const uint32_t size, uint8_t * const p_data))       flash_read,
 		.pf_nvm_erase  = (nvm_status_t (*)(const uint32_t addr, const uint32_t size))                               flash_erase,
 
-		// Enable EEPROM emulation as end device is FLASH based
+        // Enable EEPROM emulation as end device is FLASH based
         .ee_en = true,
 	},
 
