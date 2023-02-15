@@ -405,7 +405,6 @@ nvm_status_t nvm_ee_sync(const nvm_region_name_t region)
     return status;
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////
 /**
 * @} <!-- END GROUP -->
