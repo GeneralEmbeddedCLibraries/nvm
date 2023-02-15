@@ -416,6 +416,17 @@ nvm_status_t nvm_erase(const nvm_region_name_t region, const uint32_t addr, cons
 	return status;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/**
+*		Sync NVM region
+*
+* @brief    When region is using EEPROM emulated memory driver this function
+*           moved data from RAM to FLASH
+*
+* @param[in]	region	- NVM region defined in config table
+* @return 		status	- Status of operation
+*/
+////////////////////////////////////////////////////////////////////////////////
 nvm_status_t nvm_sync(const nvm_region_name_t region)
 {
 	nvm_status_t status = eNVM_OK;
