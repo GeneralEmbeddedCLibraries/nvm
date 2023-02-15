@@ -5,16 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project/module adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
-## V2.1.0 - xx.xx.2023
+## V2.1.0 - 15.02.2023
 
 ### Added 
  - Added eeprom emulation for flash memory devices
+ - Configuration NVM table checker (solved issue #8)
 
 ### Fixed
  - Invalid address & size checking for read, write and erase API function
-
-### Todo
-- Configuration table checker
 
 ---
 ## V2.0.0 - 14.12.2022
