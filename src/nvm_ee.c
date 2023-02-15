@@ -80,7 +80,7 @@ static nvm_status_t nvm_ee_copy_ram_to_flash(void)
     for (uint32_t region = 0U; region < eNVM_REGION_NUM_OF; region++)
     {
         // Check if EEPROM emulation is enabled
-        if ( true == gp_nvm_regions[region].p_driver->ee.en )
+        if ( true == gp_nvm_regions[region].p_driver->ee_en )
         {
             // Write complete NVM region
             if ( eNVM_OK != gp_nvm_regions[region].p_driver->pf_nvm_write( gp_nvm_regions[region].start_addr, gp_nvm_regions[region].size, (const uint8_t*) &gp_ram_mem[ram_offset] ))
@@ -112,7 +112,7 @@ static nvm_status_t nvm_ee_copy_flash_to_ram(void)
     for (uint32_t region = 0U; region < eNVM_REGION_NUM_OF; region++)
     {
         // Check if EEPROM emulation is enabled
-        if ( true == gp_nvm_regions[region].p_driver->ee.en )
+        if ( true == gp_nvm_regions[region].p_driver->ee_en )
         {
             // Read complete NVM region
             if ( eNVM_OK != gp_nvm_regions[region].p_driver->pf_nvm_read( gp_nvm_regions[region].start_addr, gp_nvm_regions[region].size, (uint8_t*) &gp_ram_mem[ram_offset] ))
@@ -145,7 +145,7 @@ static uint32_t nvm_ee_calc_ram_offset(const nvm_region_name_t region, const uin
     for (uint32_t reg_name = 0U; reg_name < eNVM_REGION_NUM_OF; reg_name++)
     {
         // Is eeprom emulated?
-        if ( true == gp_nvm_regions[region].p_driver->ee.en )
+        if ( true == gp_nvm_regions[region].p_driver->ee_en )
         {
             // Ignore first region
             if ( reg_name > 0U )
@@ -208,7 +208,7 @@ nvm_status_t nvm_ee_init(void)
         for (uint32_t region = 0U; region < eNVM_REGION_NUM_OF; region++)
         {
             // Check if EEPROM emulation is enabled
-            if ( true == gp_nvm_regions[region].p_driver->ee.en )
+            if ( true == gp_nvm_regions[region].p_driver->ee_en )
             {
                 // Accumulate all RAM space needed to contain Flash memory
                 ram_space += gp_nvm_regions[region].size;

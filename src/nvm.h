@@ -49,26 +49,16 @@ typedef enum
 } nvm_status_t;
 
 /**
- *  EEPROM Emulation
- */
-typedef struct
-{
-    uint32_t    page_size;  /**<Page size of FLASH memory device */
-    bool        en;         /**<Enable EEPROM emulation */
-} nvm_ee_t;
-
-/**
  * 	Memory device driver
  */
 typedef struct nvm_mem_driver_s
 {
-	nvm_status_t (*pf_nvm_init)		(void);
-	nvm_status_t (*pf_nvm_deinit)	(void);
-	nvm_status_t (*pf_nvm_write)	(const uint32_t addr, const uint32_t size, const uint8_t * const p_data);
-	nvm_status_t (*pf_nvm_read)		(const uint32_t addr, const uint32_t size, uint8_t * const p_data);
-	nvm_status_t (*pf_nvm_erase)	(const uint32_t addr, const uint32_t size);
-
-    nvm_ee_t    ee;     /**<EEPROM emulation */
+	nvm_status_t (*pf_nvm_init)		(void);                                                                     /**<Initialize low level interface pointer function */
+	nvm_status_t (*pf_nvm_deinit)	(void);                                                                     /**<De-initialize low level interface pointer function */
+	nvm_status_t (*pf_nvm_write)	(const uint32_t addr, const uint32_t size, const uint8_t * const p_data);   /**<Write low level interface pointer function */
+	nvm_status_t (*pf_nvm_read)		(const uint32_t addr, const uint32_t size, uint8_t * const p_data);         /**<Read low level interface pointer function */
+	nvm_status_t (*pf_nvm_erase)	(const uint32_t addr, const uint32_t size);                                 /**<Erase low level interface pointer function */
+    bool ee_en;                                                                                                 /**<Enable/Disable EEPROM emulation switch */
 } nvm_mem_driver_t;
 
 /**

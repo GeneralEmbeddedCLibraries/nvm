@@ -221,7 +221,7 @@ nvm_status_t nvm_write(const nvm_region_name_t region, const uint32_t addr, cons
 				{
 			#endif
                     // EEPROM emulated region
-                    if ( true == gp_nvm_regions[region].p_driver->ee.en )
+                    if ( true == gp_nvm_regions[region].p_driver->ee_en )
                     {
                         status = nvm_ee_write( region, addr, size, p_data );
                     }
@@ -298,7 +298,7 @@ nvm_status_t nvm_read(const nvm_region_name_t region, const uint32_t addr, const
 				{
 			#endif
                     // EEPROM emulated region
-                    if ( true == gp_nvm_regions[region].p_driver->ee.en )
+                    if ( true == gp_nvm_regions[region].p_driver->ee_en )
                     {
                         status = nvm_ee_read( region, addr, size, p_data );
                     }
@@ -375,7 +375,7 @@ nvm_status_t nvm_erase(const nvm_region_name_t region, const uint32_t addr, cons
 			#endif
 					
                     // EEPROM emulated region
-                    if ( true == gp_nvm_regions[region].p_driver->ee.en )
+                    if ( true == gp_nvm_regions[region].p_driver->ee_en )
                     {
                         status = nvm_ee_erase( region, addr, size );
                     }
