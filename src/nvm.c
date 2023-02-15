@@ -206,15 +206,15 @@ nvm_status_t nvm_write(const nvm_region_name_t region, const uint32_t addr, cons
 	NVM_ASSERT( true == gb_is_init );
 	NVM_ASSERT( region < eNVM_REGION_NUM_OF );
 	NVM_ASSERT(		(( addr + gp_nvm_regions[region].start_addr ) < ( gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size ))
-				&& 	(( addr + gp_nvm_regions[region].start_addr + size ) < ( addr + gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size )));
+				&& 	( size <= gp_nvm_regions[region].size ));
 
-	// Check init
-	if ( true == gb_is_init )
+    // Is init and valid range
+	if  (   ( true == gb_is_init )
+        &&  ( region < eNVM_REGION_NUM_OF  ))
 	{
-		// Check valid input
-		if ( 	( region < eNVM_REGION_NUM_OF )
-				&&	( 	(( addr + gp_nvm_regions[region].start_addr ) < ( gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size ))
-					&& 	(( addr + gp_nvm_regions[region].start_addr + size ) < ( addr + gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size ))))
+		// Valid address and size
+		if (    (( addr + gp_nvm_regions[region].start_addr ) < ( gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size ))
+            && 	( size <= gp_nvm_regions[region].size ))
 		{
 			#if ( 1 == NVM_CFG_MUTEX_EN )
 				if ( eNVM_OK == nvm_if_aquire_mutex())
@@ -283,15 +283,15 @@ nvm_status_t nvm_read(const nvm_region_name_t region, const uint32_t addr, const
 	NVM_ASSERT( true == gb_is_init );
 	NVM_ASSERT( region < eNVM_REGION_NUM_OF );
 	NVM_ASSERT(		(( addr + gp_nvm_regions[region].start_addr ) < ( gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size ))
-				&& 	(( addr + gp_nvm_regions[region].start_addr + size ) < ( addr + gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size )));
+				&& 	( size <= gp_nvm_regions[region].size ));
 
-	// Check init
-	if ( true == gb_is_init )
+    // Is init and valid range
+	if  (   ( true == gb_is_init )
+        &&  ( region < eNVM_REGION_NUM_OF  ))
 	{
-		// Check valid input
-		if ( 	( region < eNVM_REGION_NUM_OF )
-				&&	( 	(( addr + gp_nvm_regions[region].start_addr ) < ( gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size ))
-					&& 	(( addr + gp_nvm_regions[region].start_addr + size ) < ( addr + gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size ))))
+		// Valid address and size
+		if (    (( addr + gp_nvm_regions[region].start_addr ) < ( gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size ))
+            && 	( size <= gp_nvm_regions[region].size ))
 		{
 			#if ( 1 == NVM_CFG_MUTEX_EN )
 				if ( eNVM_OK == nvm_if_aquire_mutex())
@@ -359,15 +359,15 @@ nvm_status_t nvm_erase(const nvm_region_name_t region, const uint32_t addr, cons
 	NVM_ASSERT( true == gb_is_init );
 	NVM_ASSERT( region < eNVM_REGION_NUM_OF );
 	NVM_ASSERT(		(( addr + gp_nvm_regions[region].start_addr ) < ( gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size ))
-				&& 	(( addr + gp_nvm_regions[region].start_addr + size ) < ( addr + gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size )));
+				&& 	( size <= gp_nvm_regions[region].size ));
 
-	// Check init
-	if ( true == gb_is_init )
+    // Is init and valid range
+	if  (   ( true == gb_is_init )
+        &&  ( region < eNVM_REGION_NUM_OF  ))
 	{
-		// Check valid input
-		if ( 	( region < eNVM_REGION_NUM_OF )
-				&&	( 	(( addr + gp_nvm_regions[region].start_addr ) < ( gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size ))
-					&& 	(( addr + gp_nvm_regions[region].start_addr + size ) < ( addr + gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size ))))
+		// Valid address and size
+		if (    (( addr + gp_nvm_regions[region].start_addr ) < ( gp_nvm_regions[region].start_addr + gp_nvm_regions[region].size ))
+            && 	( size <= gp_nvm_regions[region].size ))
 		{
 			#if ( 1 == NVM_CFG_MUTEX_EN )
 				if ( eNVM_OK == nvm_if_aquire_mutex())

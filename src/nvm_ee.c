@@ -200,6 +200,9 @@ nvm_status_t nvm_ee_init(void)
         // Get table configuration
         gp_nvm_regions = nvm_cfg_get_regions();
         gp_nvm_drivers = nvm_cfg_get_drivers();
+
+        NVM_ASSERT( NULL != gp_nvm_regions );
+        NVM_ASSERT( NULL != gp_nvm_drivers );
     
         // Count regions which wants to emulate eeprom
         for (uint32_t region = 0U; region < eNVM_REGION_NUM_OF; region++)
@@ -228,6 +231,7 @@ nvm_status_t nvm_ee_init(void)
                 status = nvm_ee_copy_flash_to_ram();
             }
 
+            // EEPROM emulation init success?
             if ( eNVM_OK == status )
             {
                 gb_is_init = true;
@@ -259,6 +263,8 @@ nvm_status_t nvm_ee_write(const nvm_region_name_t region, const uint32_t addr, c
     uint32_t     ram_offset = 0U;      
 
     NVM_ASSERT( true == gb_is_init );
+
+    // NOTE: Checks for addr, size and p_data is already be done by higher level code in nvm.c!
 
     if ( true == gb_is_init )
     {
@@ -300,6 +306,8 @@ nvm_status_t nvm_ee_read(const nvm_region_name_t region, const uint32_t addr, co
 
     NVM_ASSERT( true == gb_is_init );
 
+    // NOTE: Checks for addr, size and p_data is already be done by higher level code in nvm.c!
+
     if ( true == gb_is_init )
     {
         // Calculate RAM offset
@@ -339,6 +347,8 @@ nvm_status_t nvm_ee_erase(const nvm_region_name_t region, const uint32_t addr, c
 
     NVM_ASSERT( true == gb_is_init );
 
+    // NOTE: Checks for addr, size and p_data is already be done by higher level code in nvm.c!
+
     if ( true == gb_is_init )
     {
         // Calculate RAM offset
@@ -374,6 +384,11 @@ nvm_status_t nvm_ee_erase(const nvm_region_name_t region, const uint32_t addr, c
 nvm_status_t nvm_ee_sync(const nvm_region_name_t region)
 {
     nvm_status_t status = eNVM_OK;
+
+    /* NOTE:    Do not assert for init as this function is being called even 
+     *          if EEPROM emulation is not in usage! Other modules (par_nvm, cli_nvm)
+     *          are calling that function regarding of using EEPROM emulation or not!
+     */
 
     if ( true == gb_is_init )
     {
