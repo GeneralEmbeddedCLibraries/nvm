@@ -180,10 +180,16 @@ static uint32_t nvm_ee_calc_ram_offset(const nvm_region_name_t region, const uin
 */
 ////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
+////////////////////////////////////////////////////////////////////////////////
+/**
+*		Initialize EEPROM emulated NVM 
+*
+* @brief    This function create space in RAM for inter-mediate EEPROM emulation
+*           purposes.
+*
+* @return 		status	- Status of operation
+*/
+////////////////////////////////////////////////////////////////////////////////
 nvm_status_t nvm_ee_init(void)
 {
     nvm_status_t    status      = eNVM_OK;
@@ -206,31 +212,47 @@ nvm_status_t nvm_ee_init(void)
             }
         }
 
-        // Allocate RAM space
-        gp_ram_mem = malloc( ram_space );
+        // Is EEPROM emulation in use?
+        if ( ram_space > 0U )
+        {
+            gp_ram_mem = malloc( ram_space );
 
-        // Allocation success?
-        if ( NULL == gp_ram_mem )
-        {
-            status = eNVM_ERROR;
-        }
-        else
-        {
-            // Copy all content from Flash to RAM
-            status = nvm_ee_copy_flash_to_ram();
-        }
+            // Allocation success?
+            if ( NULL == gp_ram_mem )
+            {
+                status = eNVM_ERROR;
+            }
+            else
+            {
+                // Copy all content from Flash to RAM
+                status = nvm_ee_copy_flash_to_ram();
+            }
 
-        if ( eNVM_OK == status )
-        {
-            gb_is_init = true;
+            if ( eNVM_OK == status )
+            {
+                gb_is_init = true;
+            }
         }
     }
 
     return status;
 }
 
-
-
+////////////////////////////////////////////////////////////////////////////////
+/**
+*		Write data to EEPROM emulated memory
+*
+* @note     This function writes to RAM (inter-meadite storage space) memory! 
+*
+* @note     This function does not interface with low level memory driver!
+*
+* @param[in]    region  - NVM region
+* @param[in]    addr    - Start address of write operation
+* @param[in]    size    - Number of bytes to write
+* @param[in]    p_data  - Data to write
+* @return 		status	- Status of operation
+*/
+////////////////////////////////////////////////////////////////////////////////
 nvm_status_t nvm_ee_write(const nvm_region_name_t region, const uint32_t addr, const uint32_t size, const uint8_t * const p_data)
 {
     nvm_status_t status     = eNVM_OK;
@@ -256,7 +278,21 @@ nvm_status_t nvm_ee_write(const nvm_region_name_t region, const uint32_t addr, c
     return status;
 }
 
-
+////////////////////////////////////////////////////////////////////////////////
+/**
+*		Read data fomr EEPROM emulated memory
+*
+* @note     This reads from RAM (inter-meadite storage space) memory!
+*
+* @note     This function does not interface with low level memory driver!
+*
+* @param[in]    region  - NVM region
+* @param[in]    addr    - Start address of read operation
+* @param[in]    size    - Number of bytes to read
+* @param[out]   p_data  - Pointer to read data
+* @return 		status	- Status of operation
+*/
+////////////////////////////////////////////////////////////////////////////////
 nvm_status_t nvm_ee_read(const nvm_region_name_t region, const uint32_t addr, const uint32_t size, uint8_t * const p_data)
 {
     nvm_status_t status     = eNVM_OK;
@@ -282,7 +318,20 @@ nvm_status_t nvm_ee_read(const nvm_region_name_t region, const uint32_t addr, co
     return status;
 }
 
-
+////////////////////////////////////////////////////////////////////////////////
+/**
+*		Erase data 
+*
+* @note     This erase bytes in RAM (inter-meadite storage space) memory!
+*
+* @note     This function does not interface with low level memory driver!
+*
+* @param[in]    region  - NVM region
+* @param[in]    addr    - Start address of erase operation
+* @param[in]    size    - Number of bytes to erase
+* @return 		status	- Status of operation
+*/
+////////////////////////////////////////////////////////////////////////////////
 nvm_status_t nvm_ee_erase(const nvm_region_name_t region, const uint32_t addr, const uint32_t size)
 {
     nvm_status_t status     = eNVM_OK;
@@ -312,6 +361,9 @@ nvm_status_t nvm_ee_erase(const nvm_region_name_t region, const uint32_t addr, c
 /**
 *		Copy data from FLASH -> RAM
 *
+* @brief    This function copies content from local RAM (inter-mediate storage)
+*           to persistant storage memory - Flash.
+*
 * @note     Some upper level module might call that function even if EEPROM
 *           emulated method is not being used! Such approach makes handling
 *           data much easier.
@@ -326,8 +378,7 @@ nvm_status_t nvm_ee_sync(const nvm_region_name_t region)
     if ( true == gb_is_init )
     {
         // Erase flash page
-        //if ( eNVM_OK != gp_nvm_regions[region].p_driver->pf_nvm_erase( gp_nvm_regions[region].start_addr, gp_nvm_regions[region].size ))
-        if ( eNVM_OK != gp_nvm_regions[region].p_driver->pf_nvm_erase( gp_nvm_regions[eNVM_REGION_INT_FLASH_DEV_PAR].start_addr, gp_nvm_regions[region].size ))
+        if ( eNVM_OK != gp_nvm_regions[region].p_driver->pf_nvm_erase( gp_nvm_regions[region].start_addr, gp_nvm_regions[region].size ))
         {
             status = eNVM_ERROR;
         }
