@@ -31,7 +31,6 @@
 // Interface
 #include "../../nvm_if.h"
 
-
 ////////////////////////////////////////////////////////////////////////////////
 // Definitions
 ////////////////////////////////////////////////////////////////////////////////
@@ -64,7 +63,68 @@ static const nvm_mem_driver_t * gp_nvm_drivers = NULL;
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
+// Function prototypes
+////////////////////////////////////////////////////////////////////////////////
+static nvm_status_t nvm_check_config(void);
+
+////////////////////////////////////////////////////////////////////////////////
 // Functions
+////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
+/**
+*		Check for NVM valid configuration
+*
+* @return 	status - Status of configuration
+*/
+////////////////////////////////////////////////////////////////////////////////
+static nvm_status_t nvm_check_config(void)
+{
+    nvm_status_t status = eNVM_OK;
+    
+    // Check all memory drivers are configured OK
+    for ( uint32_t mem_drv = 0U; mem_drv < eNVM_MEM_DRV_NUM_OF; mem_drv++)
+    {   
+        // All low level interfaces must be defined
+        if  (   ( NULL == gp_nvm_drivers[mem_drv].pf_nvm_init   )
+            ||  ( NULL == gp_nvm_drivers[mem_drv].pf_nvm_deinit )
+            ||  ( NULL == gp_nvm_drivers[mem_drv].pf_nvm_read   )
+            ||  ( NULL == gp_nvm_drivers[mem_drv].pf_nvm_write  )
+            ||  ( NULL == gp_nvm_drivers[mem_drv].pf_nvm_erase  ))
+        {
+            status = eNVM_ERROR;
+            break;
+        }
+    }
+    
+    // Check all regions are configuraed OK
+    for ( uint32_t reg_idx = 0U; reg_idx < eNVM_REGION_NUM_OF; reg_idx++)
+    {
+        if  (   ( NULL == gp_nvm_regions[reg_idx].name )
+            ||  ( NULL == gp_nvm_regions[reg_idx].p_driver )
+            ||  ( 0U == gp_nvm_regions[reg_idx].size ))
+        {
+            status = eNVM_ERROR;
+            break;        
+        }
+    }
+
+    return status;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/**
+* @} <!-- END GROUP -->
+*/
+////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
+/**
+*@addtogroup NVM_API
+* @{ <!-- BEGIN GROUP -->
+*
+* 	Following function are part of NVM API.
+*/
 ////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -86,33 +146,43 @@ nvm_status_t nvm_init(void)
 		NVM_ASSERT( NULL != gp_nvm_regions );
 		NVM_ASSERT( NULL != gp_nvm_drivers );
 
-        // TODO: Add configuration checker!!!
+        // Check for valid configuration
+        if ( eNVM_OK == nvm_check_config())
+        {
+    		// Low level driver init
+    		for ( uint32_t mem_drv_num = 0; mem_drv_num < eNVM_MEM_DRV_NUM_OF; mem_drv_num++ )
+    		{
+                // TODO: Omit NULL Check adter configuration checker is implemented!!!
+    			if ( NULL != gp_nvm_drivers[mem_drv_num].pf_nvm_init )
+    			{
+                    // Init low level memory driver
+    				status |= gp_nvm_drivers[mem_drv_num].pf_nvm_init();
 
-		// Low level driver init
-		for ( uint32_t mem_drv_num = 0; mem_drv_num < eNVM_MEM_DRV_NUM_OF; mem_drv_num++ )
-		{
-            // TODO: Omit NULL Check adter configuration checker is implemented!!!
-			if ( NULL != gp_nvm_drivers[mem_drv_num].pf_nvm_init )
-			{
-                // Init low level memory driver
-				status |= gp_nvm_drivers[mem_drv_num].pf_nvm_init();
+    				NVM_DBG_PRINT( "NVM: Low level memory driver #%d initialize with status: %s", mem_drv_num, nvm_get_status_str( status ));
+    			}
+    		}
 
-				NVM_DBG_PRINT( "NVM: Low level memory driver #%d initialize with status: %s", mem_drv_num, nvm_get_status_str( status ));
-			}
+            // Init NVM EEPROM Emulation
+            status |= nvm_ee_init();
 
-		}
+    		// Init NVM interface
+    		status |= nvm_if_init();
 
-        // Init NVM EEPROM Emulation
-        status |= nvm_ee_init();
+    		// Init success
+    		if ( eNVM_OK == status )
+    		{
+    			gb_is_init = true;
+    		}
+        }
 
-		// Init NVM interface
-		status |= nvm_if_init();
+        // Invalid NVM configuration
+        else
+        {
+            status = eNVM_ERROR;
 
-		// Init success
-		if ( eNVM_OK == status )
-		{
-			gb_is_init = true;
-		}
+            NVM_DBG_PRINT( "NVM: Configuration invalid!" );
+            NVM_ASSERT( 0 );
+        }
 	}
 	else
 	{
