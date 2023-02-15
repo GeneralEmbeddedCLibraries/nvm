@@ -6,8 +6,8 @@
 *@brief     NVM EEPROM Emulation
 *@author    Ziga Miklosic
 *@email		ziga.miklosic@gmail.com
-*@date      14.02.2023
-*@version   V2.0.0
+*@date      15.02.2023
+*@version	V2.1.0
 */
 ////////////////////////////////////////////////////////////////////////////////
 /*!

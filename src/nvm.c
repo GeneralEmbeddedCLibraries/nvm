@@ -6,8 +6,8 @@
 *@file      nvm.c
 *@brief     Non-Volatile memory
 *@author    Ziga Miklosic
-*@date      14.12.2022
-*@version	V2.0.0
+*@date      15.02.2023
+*@version	V2.1.0
 */
 ////////////////////////////////////////////////////////////////////////////////
 /**
@@ -152,14 +152,10 @@ nvm_status_t nvm_init(void)
     		// Low level driver init
     		for ( uint32_t mem_drv_num = 0; mem_drv_num < eNVM_MEM_DRV_NUM_OF; mem_drv_num++ )
     		{
-                // TODO: Omit NULL Check adter configuration checker is implemented!!!
-    			if ( NULL != gp_nvm_drivers[mem_drv_num].pf_nvm_init )
-    			{
-                    // Init low level memory driver
-    				status |= gp_nvm_drivers[mem_drv_num].pf_nvm_init();
+                // Init low level memory driver
+                status |= gp_nvm_drivers[mem_drv_num].pf_nvm_init();
 
-    				NVM_DBG_PRINT( "NVM: Low level memory driver #%d initialize with status: %s", mem_drv_num, nvm_get_status_str( status ));
-    			}
+                NVM_DBG_PRINT( "NVM: Low level memory driver #%d initialize with status: %s", mem_drv_num, nvm_get_status_str( status ));
     		}
 
             // Init NVM EEPROM Emulation

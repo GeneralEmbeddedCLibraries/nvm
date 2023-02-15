@@ -6,8 +6,8 @@
 *@file      nvm.h
 *@brief     Non-Volatile memory
 *@author    Ziga Miklosic
-*@date      14.12.2022
-*@version	V2.0.0
+*@date      15.02.2023
+*@version	V2.1.0
 */
 ////////////////////////////////////////////////////////////////////////////////
 /**
@@ -36,7 +36,7 @@
  * 	Module version
  */
 #define NVM_VER_MAJOR		( 2 )
-#define NVM_VER_MINOR		( 0 )
+#define NVM_VER_MINOR		( 1 )
 #define NVM_VER_DEVELOP		( 0 )
 
 /**
