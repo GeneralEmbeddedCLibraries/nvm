@@ -180,10 +180,6 @@ nvm_status_t nvm_init(void)
             NVM_ASSERT( 0 );
         }
 	}
-	else
-	{
-		status = eNVM_ERROR;
-	}
 
 	return status;
 }
@@ -218,10 +214,6 @@ nvm_status_t nvm_deinit(void)
         {
             gb_is_init = false;
         }
-    }
-    else
-    {
-        status = eNVM_ERROR;
     }
 
     return status;
