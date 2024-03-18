@@ -28,7 +28,8 @@
 
 // USER CODE BEGIN...
 
-#include "project_config.h"
+// Global project config
+#include "config/proj_cfg.h"
 
 // Debug communication port
 #include "middleware/cli/cli/src/cli.h"
@@ -106,7 +107,7 @@ typedef enum
  * 	 Assertion macros
  */
 #if ( 1 == NVM_CFG_ASSERT_EN )
-	#define NVM_ASSERT(x)						PROJECT_CONFIG_ASSERT(x)
+	#define NVM_ASSERT(x)						PROJ_CFG_ASSERT(x)
 #else
 	#define NVM_ASSERT(x)						{ ; }
 #endif
